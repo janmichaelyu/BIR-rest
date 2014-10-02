@@ -218,6 +218,13 @@
         <range-element-index>
           <scalar-type>string</scalar-type>
           <namespace-uri></namespace-uri>
+          <localname>city</localname>
+          <collation>http://marklogic.com/collation/en/MO</collation>
+          <range-value-positions>true</range-value-positions>
+        </range-element-index>
+        <range-element-index>
+          <scalar-type>string</scalar-type>
+          <namespace-uri></namespace-uri>
           <localname>barangay</localname>
           <collation>http://marklogic.com/collation/en/MO</collation>
           <range-value-positions>true</range-value-positions>

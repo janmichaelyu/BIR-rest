@@ -9,7 +9,6 @@ declare variable $end as xs:string external;
 :)
 declare variable $params as map:map external;
 
-
 xdmp:log(fn:concat("Spawn ",map:get($params,"fileName")," start"),"debug"),
 bir:load-file($params, "listings"),
 xdmp:log(fn:concat("Spawn ",map:get($params,"fileName")," stopped ",xdmp:elapsed-time()),"debug")

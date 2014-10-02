@@ -3,13 +3,14 @@ xquery version "1.0-ml";
 declare default collation "http://marklogic.com/collation/en/MO";
 declare option xdmp:mapping "false";
 
-(:
 declare variable $fields := ( "rdo", "city", "barangay", "street", "condo", "vicinity", "class" );
 declare variable $labels := ( "RDO", "City/Municipality", "Barangay", "Street", "Condo/Townhouse", "Vicinity", "Class" );
-:)
+declare variable $counters := map:map();
+
+(:
 declare variable $fields := ( "rdo", "barangay", "street", "condo", "vicinity", "class" );
 declare variable $labels := ( "RDO", "Barangay", "Street", "Condo/Townhouse", "Vicinity", "Class" );
-
+:)
 declare function local:pretty-class(
     $code as xs:string
 ) as xs:string
@@ -54,8 +55,14 @@ declare function local:combobox(
     let $_ := xdmp:log(fn:concat("query=", $q),"debug")
     let $vals := cts:element-values(xs:QName($name), "", (), cts:and-query(($q,$date-q)))
     let $count := fn:count($vals)
+    let $_ := map:put($counters,$name,$count)
     let $_ := xdmp:log(fn:concat($name, "::count=", $count),"debug")
-    let $notapplicable := ($count = 0 or ($count = 1 and $vals = ""))
+(:    let $notapplicable := ($count = 0) or ($count = 1 and $vals = ""):)
+    let $notapplicable := (
+      ($name = "condo" and (xdmp:get-request-field("street") ne "" or $count = 0)) or
+      ($name = "street" and (xdmp:get-request-field("condo") ne "" or $count = 0)) or
+      ($name = "vicinity" and ($count = 0 or ($count = 1 and $vals = "")))
+    )
 
     return 
         <div class="form-group">
@@ -79,11 +86,9 @@ declare function local:combobox(
 };
 
 xdmp:set-response-content-type("text/html"),
-
+let $_ := map:clear($counters)
 let $rdo := xdmp:get-request-field("rdo")
-(:
 let $city := xdmp:get-request-field("city")
-:)
 let $barangay := xdmp:get-request-field("barangay")
 let $street := xdmp:get-request-field("street")
 let $condo := xdmp:get-request-field("condo")
@@ -92,12 +97,11 @@ let $class := xdmp:get-request-field("class")
 let $sqm := xs:integer(xdmp:get-request-field("sqm","1"))
 (:let $date := xdmp:get-request-field("date",fn:substring(xs:string(fn:current-date()),1,10)):)
 let $date := xdmp:get-request-field("date")
+let $hitCounts := map:map()
 
 let $_ := xdmp:log(fn:concat(
 "rdo=[",$rdo,"] ",
-(:
 "city=[",$city,"] ",
-:)
 "barangay=[",$barangay,"] ",
 "street=[",$street,"] ",
 "condo=[",$condo,"] ",
@@ -105,13 +109,13 @@ let $_ := xdmp:log(fn:concat(
 "class=[",$class,"]",
 "date=[",$date,"]"
 ),
-"fine")
+"debug")
 
-let $date-q := if (fn:empty($date) or $date eq "") 
-    then cts:and-query((
+let $date-q := if (fn:empty($date) or $date eq "") then () 
+(:    then cts:and-query((
         cts:element-attribute-range-query(xs:QName("start-date"),xs:QName("iso-date"),"<=",xs:date(fn:substring(xs:string(fn:current-date()),1,10))),
         cts:element-attribute-range-query(xs:QName("end-date"),xs:QName("iso-date"),">=",xs:date(fn:substring(xs:string(fn:current-date()),1,10)))
-    ))
+    )) :)
     else cts:and-query((
         cts:element-attribute-range-query(xs:QName("start-date"),xs:QName("iso-date"),"<=",xs:date($date)),
         cts:element-attribute-range-query(xs:QName("end-date"),xs:QName("iso-date"),">=",xs:date($date))
@@ -120,9 +124,7 @@ let $q :=
     cts:and-query((
         cts:collection-query(("listings")),
         if ($rdo) then cts:element-value-query(xs:QName("rdo"), $rdo) else (),
-(:
         if ($city) then cts:element-value-query(xs:QName("city"), $city) else (),
-:)
         if ($barangay) then cts:element-value-query(xs:QName("barangay"), $barangay) else (),
         if ($street) then cts:element-value-query(xs:QName("street"), $street) else (),
         if ($condo) then cts:element-value-query(xs:QName("condo"), $condo) else (),
@@ -171,7 +173,7 @@ return
     <h3 class="center">Please select your location to view the zonal value</h3>
     <form class="form-horizontal ui-widget" role="form" id="zonalForm">
         { local:combobox("rdo",$rdo,$date-q) }
-        {(: local:combobox("city",$city,$date-q) :)}
+        { local:combobox("city",$city,$date-q) }
 		{ local:combobox("barangay",$barangay,$date-q) }
 		{ local:combobox("street",$street,$date-q) }
 		{ local:combobox("condo",$condo,$date-q) }
@@ -191,11 +193,13 @@ return
         </div>
     </form>
     { 
-        let $hits := xdmp:estimate(cts:search(fn:collection("listings"), 
-            cts:and-query(($q,$date-q)),"unfiltered"))
-        let $_ := xdmp:log(fn:concat("NR OF HITS:",$hits),"debug")
+        let $_ := for $key in map:keys($counters) return xdmp:log(fn:concat("key[",$key,"] has value[",map:get($counters,$key),"]"),"debug")
+        let $hits := cts:search(fn:collection("listings"), 
+            cts:and-query(($q,$date-q)),"unfiltered")
+        let $nr_of_hits := if (fn:empty($hits)) then 0 else cts:remainder($hits[1])
+        let $_ := xdmp:log(fn:concat("NR OF HITS:",$nr_of_hits),"debug")
         let $listings :=
-            if ($hits = 1)
+            if ($nr_of_hits = 1 or (map:contains($counters,"class") and map:get($counters,"class") eq 1))
             then (cts:search(fn:collection("listings"), 
                 cts:and-query(($q,if (fn:empty($date) or $date eq "") then () else $date-q)),"unfiltered"),
                 xdmp:log(fn:concat("GET_LISTINGS::cts:search(fn:collection('listings'), 
@@ -216,9 +220,9 @@ return
                         let $_ := xdmp:log($listing,"debug")
                         let $rev := 
                             if (ends-with($listing//rev, ".00")) 
-                            then substring-before($listing//rev, ".00") 
+                            then fn:replace(fn:substring-before($listing//rev, ".00"),",","") 
                             else if (ends-with($listing//rev, ",00"))
-                            then  substring-before($listing//rev, ",00") 
+                            then  fn:replace(fn:substring-before($listing//rev, ",00"),"\.","") 
                             else $listing//rev
                         let $start-date := $listing//start-date/text()
                         let $end-date := $listing//end-date/text()
@@ -229,13 +233,15 @@ return
                                 <tr>
                                     <td class="col-sm-1"><strong>{ $start-date }</strong></td>
                                     <td class="col-sm-1"><strong>{ $end-date }</strong></td>
-                                    <td class="col-sm-3"><strong>{
+                                    <td class="col-sm-3">{
                                         if (not($rev castable as xs:float)) 
-                                        then $rev
-                                        else if ($sqm = 1) 
+                                        then <em>{ $rev }</em>
+                                        else <strong>{ 
+                                            if ($sqm = 1) 
                                             then fn:concat("Php ",local:commify($rev))
                                             else fn:concat("Php ", local:commify($rev), " x ", local:commify($sqm), " sqm = Php ", local:commify($sqm*xs:float($rev)))
                                         }</strong>
+                                        }
                                     </td>
                                 </tr>
                             else ()
@@ -270,6 +276,9 @@ return
                     "$('#zonalForm').submit();&#xa;",
                     "}&#xa;});&#xa;")
             }
+            $('#city').on("change", function (e) {{
+                alert("city changed");
+            }});
             $('#date').datepicker({{
                     onRender: function(date) {{
                         return date.valueOf();
