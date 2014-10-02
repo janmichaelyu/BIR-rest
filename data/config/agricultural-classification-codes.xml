@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classifications>
+    <classification>
+        <code>A1</code>
+        <name>Riceland Irrigated</name>
+    </classification>
+    <classification>
+        <code>A2</code>
+        <name>Riceland Unirrigated</name>
+    </classification>
+    <classification>
+        <code>A3</code>
+        <name>Upland</name>
+    </classification>
+    <classification>
+        <code>A4</code>
+        <name>Coco Land</name>
+    </classification>
+    <classification>
+        <code>A5</code>
+        <name>Citrus Land</name>
+    </classification>
+    <classification>
+        <code>A6</code>
+        <name>Fishpond</name>
+    </classification>
+    <classification>
+        <code>A7</code>
+        <name>Swamp</name>
+    </classification>
+    <classification>
+        <code>A8</code>
+        <name>Nipa Land</name>
+    </classification>
+    <classification>
+        <code>A9</code>
+        <name>Cotton Land</name>
+    </classification>
+    <classification>
+        <code>A10</code>
+        <name>Cogon</name>
+    </classification>
+    <classification>
+        <code>A11</code>
+        <name>Abaca Land</name>
+    </classification>
+    <classification>
+        <code>A12</code>
+        <name>Orchard</name>
+    </classification>
+    <classification>
+        <code>A13</code>
+        <name>Pineapple Land</name>
+    </classification>
+    <classification>
+        <code>A14</code>
+        <name>Banana Land</name>
+    </classification>
+    <classification>
+        <code>A15</code>
+        <name>Pasture Land</name>
+    </classification>
+    <classification>
+        <code>A16</code>
+        <name>Corn Land</name>
+    </classification>
+    <classification>
+        <code>A17</code>
+        <name>Sugar Land</name>
+    </classification>
+    <classification>
+        <code>A18</code>
+        <name>Tobacco Land</name>
+    </classification>
+    <classification>
+        <code>A19</code>
+        <name>Cacao</name>
+    </classification>
+    <classification>
+        <code>A20</code>
+        <name>Lanzones</name>
+    </classification>
+    <classification>
+        <code>A21</code>
+        <name>Durian</name>
+    </classification>
+    <classification>
+        <code>A22</code>
+        <name>Rambutan</name>
+    </classification>
+    <classification>
+        <code>A23</code>
+        <name>Mango</name>
+    </classification>
+    <classification>
+        <code>A24</code>
+        <name>Mangrove</name>
+    </classification>
+    <classification>
+        <code>A25</code>
+        <name>Camote/Cassava</name>
+    </classification>
+    <classification>
+        <code>A26</code>
+        <name>Bamboo Land</name>
+    </classification>
+    <classification>
+        <code>A27</code>
+        <name>Peanut Land</name>
+    </classification>
+    <classification>
+        <code>A28</code>
+        <name>Soy beans Land</name>
+    </classification>
+    <classification>
+        <code>A29</code>
+        <name>Grape vineyard</name>
+    </classification>
+    <classification>
+        <code>A30</code>
+        <name>Pepper Land</name>
+    </classification>
+    <classification>
+        <code>A31</code>
+        <name>Mineral Land</name>
+    </classification>
+    <classification>
+        <code>A32</code>
+        <name>Non Metallic mineral Land</name>
+    </classification>
+    <classification>
+        <code>A33</code>
+        <name>Coal Deposit</name>
+    </classification>
+    <classification>
+        <code>A34</code>
+        <name>African Oil Land</name>
+    </classification>
+    <classification>
+        <code>A35</code>
+        <name>Rubber Land</name>
+    </classification>
+    <classification>
+        <code>A36</code>
+        <name>Forest Land/Timber Land</name>
+    </classification>
+    <classification>
+        <code>A37</code>
+        <name>Horticultural Land</name>
+    </classification>
+    <classification>
+        <code>A38</code>
+        <name>Salt Beds</name>
+    </classification>
+    <classification>
+        <code>A39</code>
+        <name>Seashore</name>
+    </classification>
+    <classification>
+        <code>A40</code>
+        <name>Resort</name>
+    </classification>
+    <classification>
+        <code>A41</code>
+        <name>Sandy/Stony</name>
+    </classification>
+    <classification>
+        <code>A42</code>
+        <name>Prawn pond</name>
+    </classification>
+    <classification>
+        <code>A43</code>
+        <name>Sorghum</name>
+    </classification>
+    <classification>
+        <code>A44</code>
+        <name>Ipil-ipil</name>
+    </classification>
+    <classification>
+        <code>A45</code>
+        <name>Kangkong</name>
+    </classification>
+    <classification>
+        <code>A46</code>
+        <name>Zarate</name>
+    </classification>
+    <classification>
+        <code>A47</code>
+        <name>Vegetable Land</name>
+    </classification>
+    <classification>
+        <code>A48</code>
+        <name>Coffee</name>
+    </classification>
+    <classification>
+        <code>A49</code>
+        <name>Mountainous / Hilly Areas</name>
+    </classification>
+    <classification>
+        <code>A50</code>
+        <name>Other Agricultural Lands</name>
+    </classification>
+</classifications>

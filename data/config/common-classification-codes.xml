@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classifications>
+    <classification>
+        <code>RR</code>
+        <name>Residential Regular</name>
+    </classification>
+    <classification>
+        <code>GL</code>
+        <name>Government Land</name>
+    </classification>
+    <classification>
+        <code>CR</code>
+        <name>Commercial Regular</name>
+    </classification>
+    <classification>
+        <code>GP*</code>
+        <name>General Purposes</name>
+    </classification>
+    <classification>
+        <code>RC</code>
+        <name>Residential Condominium</name>
+    </classification>
+    <classification>
+        <code>I</code>
+        <name>Industrial</name>
+    </classification>
+    <classification>
+        <code>CC</code>
+        <name>Commercial Condominium</name>
+    </classification>
+    <classification>
+        <code>X</code>
+        <name>Institutional</name>
+    </classification>
+    <classification>
+        <code>CL</code>
+        <name>Cemetery Lot</name>
+    </classification>
+    <classification>
+        <code>APD</code>
+        <name>Area for Priority</name>
+    </classification>
+    <classification>
+        <code>A</code>
+        <name>Agricultural Development</name>
+    </classification>
+    <classification>
+        <code>PS</code>
+        <name>Parking Slot</name>
+    </classification>
+</classifications>

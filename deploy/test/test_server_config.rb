@@ -5,6 +5,7 @@ require 'util'
 class TestProperties < Test::Unit::TestCase
 
   def teardown
+    Logger.new(STDOUT).info "Teardown: Wiping self-test deployment.." if @s
     @s.wipe if @s
   end
 
@@ -59,10 +60,39 @@ class TestProperties < Test::Unit::TestCase
 
     assert(@s.bootstrap, "Boostrap should succeeded")
     assert(@s.validate_install, "Bootstrap passes validation")
+
+    if File.exist? File.expand_path("../data/ml#{version}-config-changed.xml", __FILE__)
+      @s = ServerConfig.new({
+          :config_file => File.expand_path("../data/ml#{version}-config-changed.xml", __FILE__),
+          :properties => properties,
+          :logger => Logger.new(STDOUT)
+        })
+
+      assert(@s.bootstrap, "Boostrap should succeeded")
+      assert(@s.validate_install, "Bootstrap passes validation")
+    end
+    
+    # TODO: temporary fix to wipe self-test until teardown is fixed
+    Logger.new(STDOUT).info "Wiping self-test deployment.."
+    @s.wipe
   end
 
   def test_bootstrap
-    version = ENV['ROXY_TEST_SERVER_VERSION'] ||  7
+    version = ENV['ROXY_TEST_SERVER_VERSION'] || 7
+    Logger.new(STDOUT).info "Testing against MarkLogic version #{version}.."
     bootstrap_version version
   end
+
+  # issue #228
+  def test_load_properties_from_command
+    ARGV << "--ml.yoda-age=900"
+    ARGV << "--ml.missing-key=val1"
+    Logger.new(STDOUT).info "A warning about a non-existing property named 'ml.missing-key' will follow, that is supposed to happen.."
+    properties = ServerConfig.properties(File.expand_path("../data/ml7-properties/", __FILE__))
+    assert_equal('900', properties['ml.yoda-age'])
+    assert(!properties.has_key?('missing-key'))
+    ARGV.shift
+    ARGV.shift
+  end
+
 end

@@ -1,0 +1,8 @@
+-input_file_path
+/Users/pkester/Customers/Phillipines/ph-bir/data/
+-input_file_pattern
+binondo.csv
+-input_file_type
+delimited_text
+-delimiter
+","

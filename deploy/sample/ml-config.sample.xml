@@ -452,7 +452,7 @@
       <description>A user for the @ml.app-name application</description>
       <password>@ml.appuser-password</password>
       <role-names>
-        <role-names>@ml.app-role</role-names>
+        <role-name>@ml.app-role</role-name>
       </role-names>
       <permissions/>
       <collections/>
@@ -490,4 +490,14 @@
     </privilege>
 -->
   </privileges>
+  <mimetypes xmlns="http://marklogic.com/xdmp/mimetypes">
+<!--
+    Sample mimetype.
+    <mimetype>
+      <name>application/crazy</name>
+      <extension>crazy stuff</extension>
+      <format>text</format>
+    </mimetype>
+-->
+  </mimetypes>
 </configuration>
