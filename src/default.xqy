@@ -4,7 +4,7 @@ declare default collation "http://marklogic.com/collation/en/MO";
 declare option xdmp:mapping "false";
 
 declare variable $fields := ( "rdo", "city", "barangay", "street", "condo", "vicinity", "class" );
-declare variable $labels := ( "RDO", "City/Municipality", "Barangay", "Street", "Condo/Townhouse", "Vicinity", "Class" );
+declare variable $labels := ( "RDO", "City/Municipality", "Barangay", "Street/Subdivision", "Condo/Townhouse", "Vicinity", "Class" );
 declare variable $counters := map:map();
 
 (:
@@ -53,9 +53,10 @@ declare function local:combobox(
     let $_ := xdmp:log(fn:concat("field=", $name),"debug")
     let $q := local:make-query(for $field in fn:subsequence($fields, 1, fn:index-of($fields,$name)-1) return $field)
     let $_ := xdmp:log(fn:concat("query=", $q),"debug")
-    let $vals := cts:element-values(xs:QName($name), "", (), cts:and-query(($q,$date-q)))
+(:    let $vals := cts:element-values(xs:QName($name), "", (), cts:and-query(($q,$date-q))) :)
+    let $vals := cts:element-values(xs:QName($name), "", (), $q)
     let $count := fn:count($vals)
-    let $_ := map:put($counters,$name,$count)
+    let $_ := map:put($counters,$name,if ($param ne "") then 1 else $count)
     let $_ := xdmp:log(fn:concat($name, "::count=", $count),"debug")
 (:    let $notapplicable := ($count = 0) or ($count = 1 and $vals = ""):)
     let $notapplicable := (
@@ -86,6 +87,7 @@ declare function local:combobox(
 };
 
 xdmp:set-response-content-type("text/html"),
+xdmp:add-response-header("Cache-Control", "max-age=600"),
 let $_ := map:clear($counters)
 let $rdo := xdmp:get-request-field("rdo")
 let $city := xdmp:get-request-field("city")
@@ -163,7 +165,21 @@ return
             margin-bottom: 5px;
         }}
         .control-label {{
-            pdding-top: 3px;
+            padding-top: 3px;
+        }}
+        .zonal-value {{
+            outline: #gray solid 2px !important;
+            font-size: x-large;
+            padding: 0.2em;
+            background: lightgray;
+        }}
+        .zonal-color {{
+            color: rgb(28,148,196);
+        }}
+        .zonal-button {{
+            background-color: white;
+            width:100%;
+            margin:0;
         }}
     </style>
 </head>
@@ -182,13 +198,20 @@ return
         <div class="form-group">
             <label class="col-sm-2 control-label">SQ Meters:</label>
             <div class="col-sm-2">
-                <input id="sqm" type="text" name="sqm" value="{ $sqm }" class="ui-widget ui-corner-left ui-corner-right"/>
+                <input id="sqm" type="text" name="sqm" value="{ $sqm }" class="ui-widget ui-corner-left ui-corner-right zonal-color"/>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label" for="date">Transaction Date:</label>
             <div class="col-sm-2">
-                <input class="ui-widget ui-corner-left ui-corner-right" id="date" type="text" name="date" value="{ $date }" data-date-format="yyyy-mm-dd"/>
+                <input class="ui-widget ui-corner-left ui-corner-right zonal-color" id="date" type="text" name="date" value="{ $date }" data-date-format="yyyy-mm-dd"/>
+            </div>
+        </div>
+    </form>
+    <form  class="form-horizontal ui-widget" role="form" id="clearZonal">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-2">
+                <input type="submit" class="ui-widget ui-corner-left ui-corner-right zonal-color zonal-button" value ="Clear"/>
             </div>
         </div>
     </form>
@@ -199,7 +222,14 @@ return
         let $nr_of_hits := if (fn:empty($hits)) then 0 else cts:remainder($hits[1])
         let $_ := xdmp:log(fn:concat("NR OF HITS:",$nr_of_hits),"debug")
         let $listings :=
-            if ($nr_of_hits = 1 or (map:contains($counters,"class") and map:get($counters,"class") eq 1))
+            if ($nr_of_hits = 1 or (
+                    (map:contains($counters,"class") and map:get($counters,"class") eq 1) and
+                    (map:contains($counters,"vicinity") and map:get($counters,"vicinity") eq 1) and (
+                        (map:contains($counters,"class") and map:get($counters,"class") eq 1) and
+                        (map:contains($counters,"vicinity") and map:get($counters,"vicinity") eq 1)
+                    )
+                )
+            )
             then (cts:search(fn:collection("listings"), 
                 cts:and-query(($q,if (fn:empty($date) or $date eq "") then () else $date-q)),"unfiltered"),
                 xdmp:log(fn:concat("GET_LISTINGS::cts:search(fn:collection('listings'), 
@@ -210,6 +240,8 @@ return
                 <table class="table">
                     <thead>
                         <tr>
+                            <th class="col-sm-1">DO No.</th>
+                            <th class="col-sm-1">Rev.</th>
                             <th class="col-sm-1">Effectivity<br/>Start Date</th>
                             <th class="col-sm-1">Effectivity<br/>End Date</th>
                             <th class="col-sm-3">Zonal Value</th>
@@ -224,37 +256,33 @@ return
                             else if (ends-with($listing//rev, ",00"))
                             then  fn:replace(fn:substring-before($listing//rev, ",00"),"\.","") 
                             else $listing//rev
-                        let $start-date := $listing//start-date/text()
-                        let $end-date := $listing//end-date/text()
+                        let $start-date := fn:string($listing//start-date/@iso-date)
+                        let $end-date := fn:string($listing//end-date/@iso-date)
                         let $sort-date := $listing//start-date/@iso-date
+                        let $do-nr := $listing//do-no/text()
+                        let $revision := $listing//revision/text()
                         order by $sort-date descending
                         return
                             if ($rev) then 
                                 <tr>
+                                    <td class="col-sm-1"><strong>{ $do-nr }</strong></td>
+                                    <td class="col-sm-1"><strong>{ $revision }</strong></td>
                                     <td class="col-sm-1"><strong>{ $start-date }</strong></td>
                                     <td class="col-sm-1"><strong>{ $end-date }</strong></td>
                                     <td class="col-sm-3">{
                                         if (not($rev castable as xs:float)) 
                                         then <em>{ $rev }</em>
-                                        else <strong>{ 
-                                            if ($sqm = 1) 
-                                            then fn:concat("Php ",local:commify($rev))
-                                            else fn:concat("Php ", local:commify($rev), " x ", local:commify($sqm), " sqm = Php ", local:commify($sqm*xs:float($rev)))
-                                        }</strong>
-                                        }
+                                        else if ($sqm = 1) 
+                                            then <strong>Php <span class="zonal-value">{ local:commify($rev) }</span></strong>
+                                            else <strong>{ fn:concat("Php ", local:commify($rev), " x ", local:commify($sqm), " sqm = Php ") }
+                                                <span class="zonal-value">{ local:commify($sqm*xs:float($rev)) }</span></strong>
+                                    }
                                     </td>
                                 </tr>
                             else ()
                     }</tbody>
                 </table>
     }
-    <form  class="form-horizontal" role="form" id="clearZonal">
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Clear</button>
-            </div>
-        </div>
-    </form>
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="/jquery/1.11.1/jquery-1.11.1.js"></script>
