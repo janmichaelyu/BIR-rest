@@ -261,6 +261,7 @@ return
                         let $sort-date := $listing//start-date/@iso-date
                         let $do-nr := $listing//do-no/text()
                         let $revision := $listing//revision/text()
+                        let $note := $listing//note/text()
                         order by $sort-date descending
                         return
                             if ($rev) then 
@@ -274,8 +275,9 @@ return
                                         then <em>{ $rev }</em>
                                         else if ($sqm = 1) 
                                             then <strong>Php <span class="zonal-value">{ local:commify($rev) }</span></strong>
-                                            else <strong>{ fn:concat("Php ", local:commify($rev), " x ", local:commify($sqm), " sqm = Php ") }
-                                                <span class="zonal-value">{ local:commify($sqm*xs:float($rev)) }</span></strong>
+                                            else (<strong>{ fn:concat("Php ", local:commify($rev), " x ", local:commify($sqm), " sqm = Php ") }
+                                                <span class="zonal-value">{ local:commify($sqm*xs:float($rev)) }</span></strong>),
+                                        if ($note) then (<br/>,<em>{ $note }</em>) else () 
                                     }
                                     </td>
                                 </tr>
