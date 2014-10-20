@@ -6,6 +6,8 @@ declare variable $LINESEP as xs:string := "&#x0d;";
 
 declare variable $MONTHS := ("jan","feb","mar","apr","may","june","july","aug","sept","oct","nov","dec");
 
+declare variable $DOUBLE-QUOTE := fn:string-to-codepoints('"');
+
 declare function bir:month2nr($string as xs:string) as xs:string
 {
   fn:format-number(fn:index-of($MONTHS,$string),"00")
@@ -34,16 +36,28 @@ declare function bir:iso-date(
   else $string
 };
 
+declare function bir:escapeSemiColonInString(
+  $string as xs:string
+) as item()
+{
+    let $quote-positions := fn:index-of(fn:string-to-codepoints($string),$DOUBLE-QUOTE)
+    return if ($quote-positions and fn:count($quote-positions) eq 2)
+        then fn:concat(fn:substring($string,1,$quote-positions[1]),
+            fn:replace(fn:substring($string,$quote-positions[1]+1,$quote-positions[2] - $quote-positions[1]),";",","),
+            fn:substring($string,$quote-positions[2]+1))
+        else $string
+};
+
 declare function bir:clean-string(
     $str as xs:string
 ) as xs:string
 {
-    fn:replace(fn:replace($str,"\(CONTINUATION\)",""),"\(continuation\)","")
+    fn:replace($str,"\(CONTINUATION\)","","i")
 };
 
 declare function bir:cleanClass($str as xs:string) as xs:string
 {
-    fn:replace($str,"(.+)[\*_]*","$1")
+    fn:replace($str,"[\*_]","")
 };
 
 declare function bir:simplify($str as xs:string) as xs:string
@@ -100,7 +114,8 @@ declare function bir:load-file(
     let $class := ""
     let $rev := 0.0
     let $condomode := fn:false()
-    let $note := fn:false()
+    let $skip-note := fn:false()
+    let $note := ""
     let $skip := fn:false()
     for $raw-line at $i in fn:tokenize($doc, $LINESEP)
     let $line := fn:normalize-space($raw-line)
@@ -111,11 +126,13 @@ declare function bir:load-file(
             fn:starts-with(fn:upper-case($line), "RDO N0.") or 
             fn:starts-with(fn:upper-case($line), "RD NO."))
         then (
-            let $nr := bir:getRDONr($line)
-            let $label := bir:getRDOName($line)
+            let $fields := fn:tokenize($line,";")
+            let $modified-line := fn:string-join($fields," ")
+            let $nr := bir:getRDONr($modified-line)
+            let $label := bir:getRDOName($modified-line)
             return (
                 xdmp:set($skip, fn:true()),
-                xdmp:set($note, fn:false()),
+                xdmp:set($skip-note, fn:false()),
                 xdmp:set($rdo-nr, $nr),
                 xdmp:set($rdo-label,$label),
                 xdmp:set($city, $label),
@@ -124,6 +141,7 @@ declare function bir:load-file(
                 xdmp:set($vicinity,""),
                 xdmp:set($class,""),
                 xdmp:set($rev,0.0),
+                xdmp:set($note,""),
                 xdmp:set($condomode,fn:false())(:,
                 xdmp:log(fn:concat("RDO NR=",$rdo-nr," label=",$rdo-label),"debug"):)
             )
@@ -133,16 +151,19 @@ declare function bir:load-file(
             fn:starts-with($line, "CITY / MUNICIPALITY:"))
         then (
             let $fields := fn:tokenize($line, ";")
-            let $subFields := fn:tokenize($fields[1],":")
+            (:let $subFields := fn:tokenize($fields[1],":")
             let $subfield := fn:normalize-space($subFields[2])
+            :)
+            let $city-name := fn:normalize-space($fields[2])
             return (
                 xdmp:set($skip, fn:false()),
-                xdmp:set($note,fn:false()),
-                xdmp:set($city, $subfield),
+                xdmp:set($skip-note,fn:false()),
+                xdmp:set($city, $city-name),
                 xdmp:set($street, ""), 
                 xdmp:set($vicinity, ""),
                 xdmp:set($class, ""), 
                 xdmp:set($rev, ""), 
+                xdmp:set($note,""),
                 xdmp:set($condomode, fn:false())
             )
         )
@@ -151,6 +172,8 @@ declare function bir:load-file(
         or fn:starts-with($line, "BARANGAYS:"))
         then (
             let $fields := fn:tokenize($line, ";")
+            let $extract := xdmp:set($barangay,fn:normalize-space(bir:clean-string($fields[2])))
+            (:
             let $extract := (
                 if ($fields[1])
                 then (
@@ -161,14 +184,15 @@ declare function bir:load-file(
                         else fn:normalize-space(bir:clean-string($recs[2])))
                 )
                 else ()
-            )
+            ):)
             return (
                 xdmp:set($skip, fn:false()),
-                xdmp:set($note,fn:false()),
+                xdmp:set($skip-note,fn:false()),
                 xdmp:set($street, ""), 
                 xdmp:set($vicinity, ""),
                 xdmp:set($class, ""), 
                 xdmp:set($rev, ""), 
+                xdmp:set($note,""),
                 xdmp:set($condomode, if (fn:starts-with(fn:upper-case($barangay),"CONDOMINIUM")) then fn:true() else fn:false())
             )
         )
@@ -176,19 +200,21 @@ declare function bir:load-file(
         then (
             xdmp:set($barangay,"CONDOMINIUMS AND TOWNHOUSES"),
             xdmp:set($street, ""), 
-            xdmp:set($note,fn:false()),
+            xdmp:set($skip-note,fn:false()),
             xdmp:set($vicinity, ""),
             xdmp:set($class, ""), 
             xdmp:set($rev, ""), 
+            xdmp:set($note,""),
             xdmp:set($condomode, fn:true())
         )
         else if ($skip eq fn:true()) then ()
         else if (starts-with($line, "***CONDO***"))
         then (xdmp:set($street, ""), 
-            xdmp:set($note,fn:false()),
+            xdmp:set($skip-note,fn:false()),
             xdmp:set($vicinity, ""),
             xdmp:set($class, ""), 
             xdmp:set($rev, ""), 
+            xdmp:set($note,""),
             xdmp:set($condomode, fn:true())
         )
         else if (fn:starts-with(fn:upper-case($line),";;Effectivity Date;") or fn:matches(fn:upper-case($line),";;\d+-[A-Z]+-\d+;"))
@@ -199,26 +225,30 @@ declare function bir:load-file(
             fn:starts-with(fn:upper-case($line), "SUBDIVISIONS;") or 
             fn:starts-with(fn:upper-case($line), "ZONE : "))
         then ()
+        else if (fn:starts-with(fn:upper-case($line), "PER RDO'S JUSTIFICATION"))
+        then (xdmp:log("Justification Note FOUND","debug"),
+            xdmp:set($skip-note,fn:true()))
         else if (fn:starts-with(fn:upper-case($line), "ZONE "))
         then (xdmp:log("Zone Note FOUND","debug"),
-            xdmp:set($note,fn:true()))
+            xdmp:set($skip-note,fn:true()))
         else if (fn:starts-with(fn:upper-case($line), "NOTE"))
         then (xdmp:log("NOTE FOUND","debug"),
-            xdmp:set($note,fn:true()))
+            xdmp:set($skip-note,fn:true()))
         else if (fn:starts-with(fn:upper-case($line), "APD*") or
             fn:starts-with(fn:upper-case($line), "*APD")
         )
         then (xdmp:log("APD* FOUND","debug"),
-            xdmp:set($note,fn:true()))
+            xdmp:set($skip-note,fn:true()))
         else if (fn:starts-with(fn:upper-case($line), "*ZONE"))
         then (xdmp:log("*ZONE FOUND","debug"),
-            xdmp:set($note,fn:true()))
-        else if ($note)
+            xdmp:set($skip-note,fn:true()))
+        else if ($skip-note)
         then ()
         else if (fn:starts-with($line, "*"))
         then ()
         else
-            let $fields := tokenize($line, ";")
+            let $escapedLine := bir:escapeSemiColonInString($line)
+            let $fields := tokenize($escapedLine, ";")
             let $fields := for $field in $fields return fn:normalize-space($field)
             let $extract := (
                 if ($fields[1]) 
@@ -226,6 +256,7 @@ declare function bir:load-file(
                     xdmp:set($street, bir:simplify($fields[1])),
                     xdmp:set($vicinity, ""), 
                     xdmp:set($class, ""), 
+                    xdmp:set($note,""),
                     xdmp:set($rev, "") (: clear rightward data :)
                 ) else (),
                 if ($fields[2]) 
@@ -241,12 +272,16 @@ declare function bir:load-file(
                 ) else (),
                 if ($fields[4]) 
                 then xdmp:set($rev, bir:simplify($fields[4])) 
+                else (),
+                if ($fields[5]) 
+                then xdmp:set($note, bir:simplify($fields[5])) 
                 else ()
             )
-            let $summary := string-join(($rdo-nr, $rdo-label, $city, $barangay, $street, $vicinity, $class, $sheet, string($condomode)), "/")
-            let $summary := string-join(($rdo-nr, $rdo-label, $sheet), "/")
-            (:let $uri := concat("/", xdmp:url-encode($summary), ".xml"):)
-            let $uri := concat("/listings/", $summary, "/", sem:uuid-string(), ".xml")
+            let $condo-string := if ($condomode) then "CONDO" else "STREET"
+            let $summary := string-join(($rdo-nr, $rdo-label, $city, $barangay, $street, $vicinity, $class, $condo-string,$sheet), "/")
+            let $uri := concat("/", xdmp:url-encode($summary), ".xml")
+            (:let $summary := string-join(($rdo-nr, $rdo-label, $sheet), "/")
+            let $uri := concat("/listings/", $summary, "/", sem:uuid-string(), ".xml"):)
             let $node := <listing uri="{$uri}">
                       <rdo nr="{$rdo-nr}">{ $rdo-label }</rdo>
                       <city>{ $city }</city>
@@ -255,6 +290,7 @@ declare function bir:load-file(
                       <vicinity>{ $vicinity }</vicinity>
                       <class>{ $class }</class>
                       <rev>{ $rev }</rev>
+                      { if ($note ne "") then <note>{ $note }</note> else () }
                       <start-date iso-date="{$iso-start-date}">{ $start-date }</start-date>
                       <end-date iso-date="{$iso-end-date}">{ $end-date }</end-date>
                       <do-no>{$do-no}</do-no>
@@ -263,7 +299,7 @@ declare function bir:load-file(
             return 
                 if (map:contains($map, $uri)) then
                     xdmp:log(fn:concat("File ", $uri, "already exists, skipping this one"),"debug")
-                else if (fn:contains($rev,",") or $rev ne "") then ( 
+                else if ($rev ne "") then ( 
                     map:put($map,$uri,$uri),
                     xdmp:document-insert($uri,
                         $node,
@@ -271,7 +307,7 @@ declare function bir:load-file(
                         $collection)
                 )
                 else (
-                    xdmp:log(fn:concat("File ",$uri," has no valid amount, moved to collection ERROR"),"debug"),
+                    xdmp:log(fn:concat("File ",$uri," has empty amount, moved to collection ERROR"),"debug"),
                     map:put($map,$uri,$uri),
                     xdmp:document-insert($uri,
                         $node,
