@@ -4,6 +4,8 @@ declare default collation "http://marklogic.com/collation/en/MO";
 declare option xdmp:mapping "false";
 
 declare variable $fields := ( "rdo", "city", "barangay", "street", "condo", "vicinity", "class" );
+declare variable $initial-fields := ("rdo", "city", "barangay");
+
 declare variable $labels := ( "RDO", "City/Municipality", "Barangay", "Street/Subdivision", "Condo/Townhouse", "Vicinity", "Class" );
 declare variable $counters := map:map();
 
@@ -54,7 +56,20 @@ declare function local:combobox(
     let $q := local:make-query(for $field in fn:subsequence($fields, 1, fn:index-of($fields,$name)-1) return $field)
     let $_ := xdmp:log(fn:concat("query=", $q),"debug")
 (:    let $vals := cts:element-values(xs:QName($name), "", (), cts:and-query(($q,$date-q))) :)
-    let $vals := cts:element-values(xs:QName($name), "", (), $q)
+    (: only execute the query when one of rdo, city or barangay has a count of 1:)
+    let $prev-fields := for $field in fn:subsequence($fields, 1, fn:index-of($fields,$name)-1) return $field
+    let $_ := xdmp:log(fn:concat("prev-fields=", fn:string-join($prev-fields,"-")),"debug")
+    
+    let $vals := 
+        if (fn:empty(fn:index-of($initial-fields,$name))) 
+        then 
+            let $doQuery := fn:sum(      
+                for $f in $initial-fields
+                let $cnt := map:get($counters,$f)
+                return $cnt)
+            return if ($doQuery eq 3) then cts:element-values(xs:QName($name), "", (), $q) else ()
+        else cts:element-values(xs:QName($name), "", (), $q)
+    
     let $count := fn:count($vals)
     let $_ := map:put($counters,$name,if ($param ne "") then 1 else $count)
     let $_ := xdmp:log(fn:concat($name, "::count=", $count),"debug")
@@ -62,7 +77,8 @@ declare function local:combobox(
     let $notapplicable := (
       ($name = "condo" and (xdmp:get-request-field("street") ne "" or $count = 0)) or
       ($name = "street" and (xdmp:get-request-field("condo") ne "" or $count = 0)) or
-      ($name = "vicinity" and ($count = 0 or ($count = 1 and $vals = "")))
+      ($name = "vicinity" and ($count = 0 or ($count = 1 and $vals = ""))) or
+      ($name = "class" and $count = 0)
     )
 
     return 
@@ -316,6 +332,11 @@ return
                 }}).on('changeDate', function(ev) {{
                     if (ev.viewMode === "days") {{
                         $('#date').datepicker('hide');
+                        $("#zonalForm").submit();
+                    }}
+                }}).keyup(function(e) {{
+                    if(e.keyCode == 8 || e.keyCode == 46) {{
+                        $('#date').val('');
                         $("#zonalForm").submit();
                     }}
                 }}).data('datepicker');

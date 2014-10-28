@@ -93,6 +93,7 @@
       <authentication>@ml.authentication-method</authentication>
       <collation>http://marklogic.com/collation/en/MO</collation>
       <default-user name="@ml.default-user"/>
+      <output-method>html</output-method>
       <url-rewriter>@ml.url-rewriter</url-rewriter>
       <error-handler>@ml.error-handler</error-handler>
       <rewrite-resolves-globally>@ml.rewrite-resolves-globally</rewrite-resolves-globally>

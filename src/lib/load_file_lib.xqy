@@ -105,6 +105,7 @@ declare function bir:load-file(
     let $doc := xdmp:document-get($file)
     
     let $map := map:map()
+    let $doubles := map:map() 
     let $rdo-nr := ""
     let $rdo-label := ""
     let $city := ""
@@ -117,203 +118,215 @@ declare function bir:load-file(
     let $skip-note := fn:false()
     let $note := ""
     let $skip := fn:false()
-    for $raw-line at $i in fn:tokenize($doc, $LINESEP)
-    let $line := fn:normalize-space($raw-line)
-    return (
-        if ($line = "")
-        then ()
-        else if (fn:starts-with(fn:upper-case($line), "RDO NO.") or 
-            fn:starts-with(fn:upper-case($line), "RDO N0.") or 
-            fn:starts-with(fn:upper-case($line), "RD NO."))
-        then (
-            let $fields := fn:tokenize($line,";")
-            let $modified-line := fn:string-join($fields," ")
-            let $nr := bir:getRDONr($modified-line)
-            let $label := bir:getRDOName($modified-line)
-            return (
-                xdmp:set($skip, fn:true()),
-                xdmp:set($skip-note, fn:false()),
-                xdmp:set($rdo-nr, $nr),
-                xdmp:set($rdo-label,$label),
-                xdmp:set($city, $label),
-                xdmp:set($barangay,""),
-                xdmp:set($street,""),
-                xdmp:set($vicinity,""),
-                xdmp:set($class,""),
-                xdmp:set($rev,0.0),
-                xdmp:set($note,""),
-                xdmp:set($condomode,fn:false())(:,
-                xdmp:log(fn:concat("RDO NR=",$rdo-nr," label=",$rdo-label),"debug"):)
-            )
-        )
-        else if (fn:starts-with($line, "MUNICIPALITY/CITY:") or 
-            fn:starts-with($line, "CITY/MUNICIPALITY:") or
-            fn:starts-with($line, "CITY / MUNICIPALITY:"))
-        then (
-            let $fields := fn:tokenize($line, ";")
-            (:let $subFields := fn:tokenize($fields[1],":")
-            let $subfield := fn:normalize-space($subFields[2])
-            :)
-            let $city-name := fn:normalize-space($fields[2])
-            return (
-                xdmp:set($skip, fn:false()),
-                xdmp:set($skip-note,fn:false()),
-                xdmp:set($city, $city-name),
-                xdmp:set($street, ""), 
-                xdmp:set($vicinity, ""),
-                xdmp:set($class, ""), 
-                xdmp:set($rev, ""), 
-                xdmp:set($note,""),
-                xdmp:set($condomode, fn:false())
-            )
-        )
-        else if (fn:starts-with($line, "BARANGAY:") 
-        or fn:starts-with($line, "BARANGAY :") 
-        or fn:starts-with($line, "BARANGAYS:"))
-        then (
-            let $fields := fn:tokenize($line, ";")
-            let $extract := xdmp:set($barangay,fn:normalize-space(bir:clean-string($fields[2])))
-            (:
-            let $extract := (
-                if ($fields[1])
+    let $_ :=
+        for $raw-line at $i in fn:tokenize($doc, $LINESEP)
+        let $line := fn:normalize-space($raw-line)
+        return (
+                if ($line = "")
+                then ()
+                else if (fn:starts-with(fn:upper-case($line), "RDO NO.") or 
+                    fn:starts-with(fn:upper-case($line), "RDO N0.") or 
+                    fn:starts-with(fn:upper-case($line), "RD NO."))
                 then (
-                    let $recs := fn:tokenize($fields[1],":")
-                    return xdmp:set($barangay, 
-                        if (fn:normalize-space($fields[2])) 
-                        then fn:concat(fn:normalize-space(bir:clean-string($recs[2]))," - ",fn:normalize-space($fields[2])) 
-                        else fn:normalize-space(bir:clean-string($recs[2])))
+                    let $fields := fn:tokenize($line,";")
+                    let $modified-line := fn:string-join($fields," ")
+                    let $nr := bir:getRDONr($modified-line)
+                    let $label := bir:getRDOName($modified-line)
+                    return (
+                        xdmp:set($skip, fn:true()),
+                        xdmp:set($skip-note, fn:false()),
+                        xdmp:set($rdo-nr, $nr),
+                        xdmp:set($rdo-label,$label),
+                        xdmp:set($city, $label),
+                        xdmp:set($barangay,""),
+                        xdmp:set($street,""),
+                        xdmp:set($vicinity,""),
+                        xdmp:set($class,""),
+                        xdmp:set($rev,0.0),
+                        xdmp:set($note,""),
+                        xdmp:set($condomode,fn:false())(:,
+                        xdmp:log(fn:concat("RDO NR=",$rdo-nr," label=",$rdo-label),"debug"):)
+                    )
                 )
-                else ()
-            ):)
-            return (
-                xdmp:set($skip, fn:false()),
-                xdmp:set($skip-note,fn:false()),
-                xdmp:set($street, ""), 
-                xdmp:set($vicinity, ""),
-                xdmp:set($class, ""), 
-                xdmp:set($rev, ""), 
-                xdmp:set($note,""),
-                xdmp:set($condomode, if (fn:starts-with(fn:upper-case($barangay),"CONDOMINIUM")) then fn:true() else fn:false())
-            )
-        )
-        else if (fn:starts-with($line, "CONDOMINIUMS AND TOWNHOUSES"))
-        then (
-            xdmp:set($barangay,"CONDOMINIUMS AND TOWNHOUSES"),
-            xdmp:set($street, ""), 
-            xdmp:set($skip-note,fn:false()),
-            xdmp:set($vicinity, ""),
-            xdmp:set($class, ""), 
-            xdmp:set($rev, ""), 
-            xdmp:set($note,""),
-            xdmp:set($condomode, fn:true())
-        )
-        else if ($skip eq fn:true()) then ()
-        else if (starts-with($line, "***CONDO***"))
-        then (xdmp:set($street, ""), 
-            xdmp:set($skip-note,fn:false()),
-            xdmp:set($vicinity, ""),
-            xdmp:set($class, ""), 
-            xdmp:set($rev, ""), 
-            xdmp:set($note,""),
-            xdmp:set($condomode, fn:true())
-        )
-        else if (fn:starts-with(fn:upper-case($line),";;Effectivity Date;") or fn:matches(fn:upper-case($line),";;\d+-[A-Z]+-\d+;"))
-        then ()
-        else if (fn:starts-with(fn:upper-case($line), ";V I C I N I T Y;") or
-            fn:starts-with(fn:upper-case($line), "STREET NAME/;") or 
-            fn:starts-with(fn:upper-case($line), "SUBDIVISION;") or 
-            fn:starts-with(fn:upper-case($line), "SUBDIVISIONS;") or 
-            fn:starts-with(fn:upper-case($line), "ZONE : "))
-        then ()
-        else if (fn:starts-with(fn:upper-case($line), "PER RDO'S JUSTIFICATION"))
-        then (xdmp:log("Justification Note FOUND","debug"),
-            xdmp:set($skip-note,fn:true()))
-        else if (fn:starts-with(fn:upper-case($line), "ZONE "))
-        then (xdmp:log("Zone Note FOUND","debug"),
-            xdmp:set($skip-note,fn:true()))
-        else if (fn:starts-with(fn:upper-case($line), "NOTE"))
-        then (xdmp:log("NOTE FOUND","debug"),
-            xdmp:set($skip-note,fn:true()))
-        else if (fn:starts-with(fn:upper-case($line), "APD*") or
-            fn:starts-with(fn:upper-case($line), "*APD")
-        )
-        then (xdmp:log("APD* FOUND","debug"),
-            xdmp:set($skip-note,fn:true()))
-        else if (fn:starts-with(fn:upper-case($line), "*ZONE"))
-        then (xdmp:log("*ZONE FOUND","debug"),
-            xdmp:set($skip-note,fn:true()))
-        else if ($skip-note)
-        then ()
-        else if (fn:starts-with($line, "*"))
-        then ()
-        else
-            let $escapedLine := bir:escapeSemiColonInString($line)
-            let $fields := tokenize($escapedLine, ";")
-            let $fields := for $field in $fields return fn:normalize-space($field)
-            let $extract := (
-                if ($fields[1]) 
+                else if (fn:starts-with($line, "MUNICIPALITY/CITY:") or 
+                    fn:starts-with($line, "CITY/MUNICIPALITY:") or
+                    fn:starts-with($line, "CITY / MUNICIPALITY:"))
                 then (
-                    xdmp:set($street, bir:simplify($fields[1])),
-                    xdmp:set($vicinity, ""), 
+                    let $fields := fn:tokenize($line, ";")
+                    (:let $subFields := fn:tokenize($fields[1],":")
+                    let $subfield := fn:normalize-space($subFields[2])
+                    :)
+                    let $city-name := fn:normalize-space($fields[2])
+                    return (
+                        xdmp:set($skip, fn:false()),
+                        xdmp:set($skip-note,fn:false()),
+                        xdmp:set($city, $city-name),
+                        xdmp:set($street, ""), 
+                        xdmp:set($vicinity, ""),
+                        xdmp:set($class, ""), 
+                        xdmp:set($rev, ""), 
+                        xdmp:set($note,""),
+                        xdmp:set($condomode, fn:false())
+                    )
+                )
+                else if (fn:starts-with($line, "BARANGAY:") 
+                or fn:starts-with($line, "BARANGAY :") 
+                or fn:starts-with($line, "BARANGAYS:"))
+                then (
+                    let $fields := fn:tokenize($line, ";")
+                    let $extract := xdmp:set($barangay,fn:normalize-space(bir:clean-string($fields[2])))
+                    (:
+                    let $extract := (
+                        if ($fields[1])
+                        then (
+                            let $recs := fn:tokenize($fields[1],":")
+                            return xdmp:set($barangay, 
+                                if (fn:normalize-space($fields[2])) 
+                                then fn:concat(fn:normalize-space(bir:clean-string($recs[2]))," - ",fn:normalize-space($fields[2])) 
+                                else fn:normalize-space(bir:clean-string($recs[2])))
+                        )
+                        else ()
+                    ):)
+                    return (
+                        xdmp:set($skip, fn:false()),
+                        xdmp:set($skip-note,fn:false()),
+                        xdmp:set($street, ""), 
+                        xdmp:set($vicinity, ""),
+                        xdmp:set($class, ""), 
+                        xdmp:set($rev, ""), 
+                        xdmp:set($note,""),
+                        xdmp:set($condomode, if (fn:starts-with(fn:upper-case($barangay),"CONDOMINIUM")) then fn:true() else fn:false())
+                    )
+                )
+                else if (fn:starts-with($line, "CONDOMINIUMS AND TOWNHOUSES"))
+                then (
+                    xdmp:set($barangay,"CONDOMINIUMS AND TOWNHOUSES"),
+                    xdmp:set($street, ""), 
+                    xdmp:set($skip-note,fn:false()),
+                    xdmp:set($vicinity, ""),
                     xdmp:set($class, ""), 
+                    xdmp:set($rev, ""), 
                     xdmp:set($note,""),
-                    xdmp:set($rev, "") (: clear rightward data :)
-                ) else (),
-                if ($fields[2]) 
-                then (
-                    xdmp:set($vicinity, bir:simplify($fields[2])),
+                    xdmp:set($condomode, fn:true())
+                )
+                else if ($skip eq fn:true()) then ()
+                else if (starts-with($line, "***CONDO***"))
+                then (xdmp:set($street, ""), 
+                    xdmp:set($skip-note,fn:false()),
+                    xdmp:set($vicinity, ""),
                     xdmp:set($class, ""), 
-                    xdmp:set($rev, "") (: clear rightward data :)
-                ) else (),
-                if ($fields[3]) 
-                then (
-                    xdmp:set($class, bir:cleanClass(bir:simplify($fields[3]))),
-                    xdmp:set($rev, "") (: clear rightward data :)
-                ) else (),
-                if ($fields[4]) 
-                then xdmp:set($rev, bir:simplify($fields[4])) 
-                else (),
-                if ($fields[5]) 
-                then xdmp:set($note, bir:simplify($fields[5])) 
-                else ()
+                    xdmp:set($rev, ""), 
+                    xdmp:set($note,""),
+                    xdmp:set($condomode, fn:true())
+                )
+                else if (fn:starts-with(fn:upper-case($line),";;Effectivity Date;") or fn:matches(fn:upper-case($line),";;\d+-[A-Z]+-\d+;"))
+                then ()
+                else if (fn:starts-with(fn:upper-case($line), ";V I C I N I T Y;") or
+                    fn:starts-with(fn:upper-case($line), "STREET NAME/;") or 
+                    fn:starts-with(fn:upper-case($line), "SUBDIVISION;") or 
+                    fn:starts-with(fn:upper-case($line), "SUBDIVISIONS;") or 
+                    fn:starts-with(fn:upper-case($line), "ZONE : "))
+                then ()
+                else if (fn:starts-with(fn:upper-case($line), "PER RDO'S JUSTIFICATION"))
+                then (xdmp:log("Justification Note FOUND","debug"),
+                    xdmp:set($skip-note,fn:true()))
+                else if (fn:starts-with(fn:upper-case($line), "ZONE "))
+                then (xdmp:log("Zone Note FOUND","debug"),
+                    xdmp:set($skip-note,fn:true()))
+                else if (fn:starts-with(fn:upper-case($line), "NOTE"))
+                then (xdmp:log("NOTE FOUND","debug"),
+                    xdmp:set($skip-note,fn:true()))
+                else if (fn:starts-with(fn:upper-case($line), "APD*") or
+                    fn:starts-with(fn:upper-case($line), "*APD")
+                )
+                then (xdmp:log("APD* FOUND","debug"),
+                    xdmp:set($skip-note,fn:true()))
+                else if (fn:starts-with(fn:upper-case($line), "*ZONE"))
+                then (xdmp:log("*ZONE FOUND","debug"),
+                    xdmp:set($skip-note,fn:true()))
+                else if ($skip-note)
+                then ()
+                else if (fn:starts-with($line, "*"))
+                then ()
+                else
+                    let $escapedLine := bir:escapeSemiColonInString($line)
+                    let $fields := tokenize($escapedLine, ";")
+                    let $fields := for $field in $fields return fn:normalize-space($field)
+                    let $extract := (
+                        if ($fields[1]) 
+                        then (
+                            xdmp:set($street, bir:simplify($fields[1])),
+                            xdmp:set($vicinity, ""), 
+                            xdmp:set($class, ""), 
+                            xdmp:set($note,""),
+                            xdmp:set($rev, "") (: clear rightward data :)
+                        ) else (),
+                        if ($fields[2]) 
+                        then (
+                            xdmp:set($vicinity, bir:simplify($fields[2])),
+                            xdmp:set($class, ""), 
+                            xdmp:set($rev, "") (: clear rightward data :)
+                        ) else (),
+                        if ($fields[3]) 
+                        then (
+                            xdmp:set($class, bir:cleanClass(bir:simplify($fields[3]))),
+                            xdmp:set($rev, "") (: clear rightward data :)
+                        ) else (),
+                        if ($fields[4]) 
+                        then xdmp:set($rev, bir:simplify($fields[4])) 
+                        else (),
+                        if ($fields[5]) 
+                        then xdmp:set($note, bir:simplify($fields[5])) 
+                        else ()
+                    )
+                    let $condo-string := if ($condomode) then "CONDO" else "STREET"
+                    let $summary := string-join(($rdo-nr, $rdo-label, $city, $barangay, $street, $vicinity, $class, $condo-string,$sheet), "/")
+                    let $uri := concat("/", xdmp:url-encode($summary), ".xml")
+                    (:let $summary := string-join(($rdo-nr, $rdo-label, $sheet), "/")
+                    let $uri := concat("/listings/", $summary, "/", sem:uuid-string(), ".xml"):)
+                    let $node := <listing uri="{$uri}">
+                              <rdo nr="{$rdo-nr}">{ $rdo-label }</rdo>
+                              <city>{ $city }</city>
+                              <barangay>{ $barangay }</barangay>
+                              { if ($condomode) then <condo>{ $street }</condo> else <street>{ $street }</street> }
+                              <vicinity>{ $vicinity }</vicinity>
+                              <class>{ $class }</class>
+                              <rev>{ $rev }</rev>
+                              { if ($note ne "") then <note>{ $note }</note> else () }
+                              <start-date iso-date="{$iso-start-date}">{ $start-date }</start-date>
+                              <end-date iso-date="{$iso-end-date}">{ $end-date }</end-date>
+                              <do-no>{$do-no}</do-no>
+                              <revision>{$revision}</revision>
+                            </listing>
+                    return 
+                        if (map:contains($map, $uri)) then (
+                            xdmp:log(fn:concat("File ", $uri, "already exists, skipping this one"),"debug"),
+                            map:put($doubles,$uri,$uri)
+                        )
+                        else if ($rev ne "") then ( 
+                            map:put($map,$uri,$uri),
+                            xdmp:document-insert($uri,
+                                $node,
+                                ($sec),
+                                $collection)
+                        )
+                        else (
+                            xdmp:log(fn:concat("File ",$uri," has empty amount, moved to collection ERROR"),"debug"),
+                            map:put($map,$uri,$uri),
+                            xdmp:document-insert($uri,
+                                $node,
+                                ($sec),
+                                "ERROR")
+                        )
             )
-            let $condo-string := if ($condomode) then "CONDO" else "STREET"
-            let $summary := string-join(($rdo-nr, $rdo-label, $city, $barangay, $street, $vicinity, $class, $condo-string,$sheet), "/")
-            let $uri := concat("/", xdmp:url-encode($summary), ".xml")
-            (:let $summary := string-join(($rdo-nr, $rdo-label, $sheet), "/")
-            let $uri := concat("/listings/", $summary, "/", sem:uuid-string(), ".xml"):)
-            let $node := <listing uri="{$uri}">
-                      <rdo nr="{$rdo-nr}">{ $rdo-label }</rdo>
-                      <city>{ $city }</city>
-                      <barangay>{ $barangay }</barangay>
-                      { if ($condomode) then <condo>{ $street }</condo> else <street>{ $street }</street> }
-                      <vicinity>{ $vicinity }</vicinity>
-                      <class>{ $class }</class>
-                      <rev>{ $rev }</rev>
-                      { if ($note ne "") then <note>{ $note }</note> else () }
-                      <start-date iso-date="{$iso-start-date}">{ $start-date }</start-date>
-                      <end-date iso-date="{$iso-end-date}">{ $end-date }</end-date>
-                      <do-no>{$do-no}</do-no>
-                      <revision>{$revision}</revision>
-                    </listing>
-            return 
-                if (map:contains($map, $uri)) then
-                    xdmp:log(fn:concat("File ", $uri, "already exists, skipping this one"),"debug")
-                else if ($rev ne "") then ( 
-                    map:put($map,$uri,$uri),
-                    xdmp:document-insert($uri,
-                        $node,
-                        ($sec),
-                        $collection)
-                )
-                else (
-                    xdmp:log(fn:concat("File ",$uri," has empty amount, moved to collection ERROR"),"debug"),
-                    map:put($map,$uri,$uri),
-                    xdmp:document-insert($uri,
-                        $node,
-                        ($sec),
-                        "ERROR")
-                )
-    )
-
+    let $_ := 
+        if (map:count($doubles) > 0) 
+        then xdmp:document-insert(fn:concat("/doubles",$file),
+            element doubles {
+                for $k in map:keys($doubles)
+                return element line { $k }
+            },
+            ($sec),"DOUBLES")
+        else ()
+    return xdmp:log(fn:concat("DOUBLES:: for file ",$file," is ", map:count($doubles)),"debug")
 };
