@@ -78,7 +78,7 @@ declare function bir:cleanupNotes(
 {
     if (fn:empty($patterns)) then $str
     else bir:cleanupNotes(fn:normalize-space(fn:replace($str,$patterns[1],"")),$patterns[position() gt 1])
-}
+};
 
 declare variable $regexNr as xs:string := "RD[O]?\sN[oO0].[^\d]*(\d+[-]?[A-Za-z]*).*";
 declare variable $regexName as xs:string := "RD[O]?\sN[oO0].[^\d]*\d+[-]?[A-Za-z]*(.+)";
@@ -291,7 +291,7 @@ declare function bir:load-file(
                         then xdmp:set($rev, bir:simplify($fields[4])) 
                         else (),
                         if ($fields[5]) 
-                        then xdmp:set($note, bir:cleanupNotes(bir:simplify($fields[5])),$page-patterns) 
+                        then xdmp:set($note, bir:cleanupNotes(bir:simplify($fields[5]),$page-patterns)) 
                         else ()
                     )
                     let $condo-string := if ($condomode) then "CONDO" else "STREET"
