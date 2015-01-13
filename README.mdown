@@ -3,9 +3,9 @@ This project is based upon the [ROXY Framework for MarkLogic](https://github.com
 
 To be able to run roxy you need the following prerequisites:
 
-A supported version of [MarkLogic](https://developer.marklogic.com/products)
-[Ruby 1.9.3](https://www.ruby-lang.org/en/) or greater
-[Java (jdk)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) Only if you wish to run the mlcp, XQSync, or RecordLoader commands.
+A supported version of [MarkLogic](https://developer.marklogic.com/products)  
+[Ruby 1.9.3](https://www.ruby-lang.org/en/) or greater  
+[Java (jdk)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) Only if you wish to run the mlcp, XQSync, or RecordLoader commands.  
 [Git](http://git-scm.com/downloads) - Required to create a new project using "ml new".
 
 Project makes use of jquery, jquery-ui and bootstrap and has an autocomplete combobox and a datepicker
@@ -27,10 +27,10 @@ and hit localhost:8045/default.xqy
 The cleanup scripts run as an applescript on a Mac. There is no version for windows or Linux.
 To run the cleanup script:
 
-Start the scripts/Save all sheets as CSV files.scpt
-Hit the run button
-Select the folder containing the excel sheets.
-Select the folder for the csv result files.
+Start the scripts/Save all sheets as CSV files.scpt  
+Hit the run button  
+Select the folder containing the excel sheets.  
+Select the folder for the csv result files.  
 Select a folder where the list of csv files will be saved. (this can be of use for the xml file with the overview)
 
 The script will go over all excel files in the inputfolder and convert these to a csv file per worksheet.
