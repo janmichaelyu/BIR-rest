@@ -1,13 +1,46 @@
 # BIR project
-This project is based upon the ROXY Framework of MarkLogic
+This project is based upon the [ROXY Framework for MarkLogic](https://github.com/marklogic/roxy)
+
+To be able to run roxy you need the following prerequisites:
+
+A supported version of [MarkLogic](https://developer.marklogic.com/products)
+[Ruby 1.9.3](https://www.ruby-lang.org/en/) or greater
+[Java (jdk)](http://www.oracle.com/technetwork/java/javase/downloads/index.html) Only if you wish to run the mlcp, XQSync, or RecordLoader commands.
+[Git](http://git-scm.com/downloads) - Required to create a new project using "ml new".
 
 Project makes use of jquery, jquery-ui and bootstrap and has an autocomplete combobox and a datepicker
 
+### Installation
 To get you up and running fast:
-clone project
-cd into directory
+```
+git clone https://github.com/peetkes/BIR-rest.git
+cd BIR-rest
 ml local bootstrap
 ml local deploy content
 ml local deploy modules
+```
 
 and hit localhost:8045/default.xqy
+
+### Convert excelsheets to CSV
+
+The cleanup scripts run as an applescript on a Mac. There is no version for windows or Linux.
+To run the cleanup script:
+
+Start the scripts/Save all sheets as CSV files.scpt
+Hit the run button
+Select the folder containing the excel sheets.
+Select the folder for the csv result files.
+Select a folder where the list of csv files will be saved. (this can be of use for the xml file with the overview)
+
+The script will go over all excel files in the inputfolder and convert these to a csv file per worksheet.
+You then need to create the overview file for all generated csv files. This overview file holds the filename, start and end date, the do-number and the revision. See scripts/sample-file-overview.xml for the format
+
+The script scripts/load-data.xqy can be used to load all data in the database.
+Open up the queryconsole on the machine [localhost:8000/qconsole], copy the content of this script , adjust the location and fileListName parameter and run the script.
+This will spawn the loading of the data to the taskserver.
+
+A chunk of test-data is available as zip in the test-data folder
+
+
+

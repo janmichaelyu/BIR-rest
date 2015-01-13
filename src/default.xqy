@@ -103,7 +103,7 @@ declare function local:combobox(
 };
 
 xdmp:set-response-content-type("text/html"),
-xdmp:add-response-header("Cache-Control", "max-age=600"),
+xdmp:add-response-header("Cache-Control", "max-age=3600, public"),
 let $_ := map:clear($counters)
 let $rdo := xdmp:get-request-field("rdo")
 let $city := xdmp:get-request-field("city")
@@ -303,10 +303,10 @@ return
     }
     </div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="/jquery/1.11.1/jquery-1.11.1.js"></script>
+    <script src="/jquery/1.11.1/jquery-1.11.1.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/bootstrap-3.2.0/js/bootstrap.min.js"></script>
-    <script src="/jquery-ui/1.9.2/js/jquery-ui-1.9.2.js"></script>
+    <script src="/jquery-ui/1.9.2/js/jquery-ui-1.9.2.min.js"></script>
     <script src="/js/datepicker/js/bootstrap-datepicker.js"></script>
     <script src="/js/custom-combobox.js"></script>
     <script>
