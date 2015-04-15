@@ -20,7 +20,13 @@ ml local deploy content
 ml local deploy modules
 ```
 
-and hit localhost:8045/default.xqy
+I added some sample data loaded from RDO No. 30 Binondo and RDO No. 50 South Makati.
+This will be loaded at the ml local deploy content command.
+After this the script scripts/set-collection.xqy must be run in the query console to set the collection for all revenue data.
+Open up the queryconsole on the machine [localhost:8000/qconsole], copy the content of this script and run the script.
+
+
+Hit localhost:8045/default.xqy to see the application in action
 
 ### Convert excelsheets to CSV
 
