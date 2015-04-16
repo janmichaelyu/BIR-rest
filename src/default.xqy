@@ -3,6 +3,8 @@ xquery version "1.0-ml";
 declare default collation "http://marklogic.com/collation/en/MO";
 declare option xdmp:mapping "false";
 
+declare variable $format-string as xs:string := "#,###.00";
+
 declare variable $fields := ( "rdo", "city", "barangay", "street", "condo", "vicinity", "class" );
 declare variable $initial-fields := ("rdo", "city","barangay");
 
@@ -74,7 +76,8 @@ declare function local:combobox(
         then ( 
             if ($initial-fields-count eq 3) 
             then cts:element-values(xs:QName($name), "", (), $q) 
-            else if ($name eq "street" and map:get($counters,"rdo") eq 1 and map:get($counters,"city") eq 1)
+            else if (($name eq "street" and map:get($counters,"rdo") eq 1 and map:get($counters,"city") eq 1) or
+                    ($name eq "condo" and map:get($counters,"rdo") eq 1 and map:get($counters,"city") eq 1))
             then cts:element-values(xs:QName($name), "", (), $q)
             else ()
         )
@@ -101,11 +104,19 @@ declare function local:combobox(
       ($name = "class" and $count = 0)
     )
     let $next-field := $fields[fn:index-of($fields,$name) + 1]
+    let $next2-field := $fields[fn:index-of($fields,$name) + 2]
     let $_ := xdmp:trace("bir-query","nextfield=" || $next-field)
+    let $_ := xdmp:trace("bir-query","next2field=" || $next2-field)
     let $extra-vals := 
         if ($next-field eq "street" and $param eq "" and map:contains($params,"street")) 
         then (
             let $q-extra := cts:element-value-query(xs:QName("street"), map:get($params,"street"), ("exact"))
+            return (
+                cts:element-values(xs:QName($name),"",(),cts:and-query(($q, $q-extra)))
+            )
+        ) else if ($next2-field eq "condo" and $param eq "" and map:contains($params,"condo")) 
+        then (
+            let $q-extra := cts:element-value-query(xs:QName("condo"), map:get($params,"condo"), ("exact"))
             return (
                 cts:element-values(xs:QName($name),"",(),cts:and-query(($q, $q-extra)))
             )
@@ -297,8 +308,10 @@ return
                         let $_ := xdmp:log($listing,"debug")
                         let $rnote := $listing//rdo/@note/fn:string()
                         let $rev := $listing//rev
-                        let $start-date := fn:string($listing//start-date/@iso-date)
-                        let $end-date := fn:string($listing//end-date/@iso-date)
+(:                        let $start-date := fn:string($listing//start-date/@iso-date)
+                        let $end-date := fn:string($listing//end-date/@iso-date):)
+                        let $start-date := fn:string($listing//start-date)
+                        let $end-date := fn:string($listing//end-date)
                         let $sort-date := $listing//start-date/@iso-date
                         let $do-nr := $listing//do-no/text()
                         let $revision := $listing//revision/text()
@@ -324,9 +337,9 @@ return
                                     <td class="col-sm-2">
                                     {
                                         if ($sqm = 1) 
-                                            then <strong>Php <span class="zonal-value">{ fn:format-number($rev,"#,###.00") }</span></strong>
-                                            else (<strong>{ fn:concat("Php ", fn:format-number($rev,"#,###.00"), " x ", fn:format-number($sqm,"#,###.00"), " sqm = Php ") }
-                                                <span class="zonal-value">{ fn:format-number($sqm*$rev,"#,###.00") }</span></strong>)
+                                            then <strong>Php <span class="zonal-value">{ fn:format-number($rev,$format-string) }</span></strong>
+                                            else (<strong>{ fn:concat("Php ", fn:format-number($rev,$format-string), " x ", fn:format-number($sqm,$format-string), " sqm = Php ") }
+                                                <span class="zonal-value">{ fn:format-number($sqm*$rev,$format-string) }</span></strong>)
                                     }
                                     </td>
                                     <td class="col-sm-2">
@@ -357,7 +370,8 @@ return
                     "select: function (event, ui) {&#xa;",
                     fn:string-join(
                     for $fld in fn:subsequence($fields,fn:index-of($fields,$field)+1)
-                    where fn:not($field eq "barangay" and $fld eq "street" and $street ne "")
+                    where fn:not(($field eq "barangay" and $fld eq "street" and $street ne "") or 
+                        ($field eq "barangay" and $fld eq "condo" and $condo ne ""))
                     return fn:concat("$('#",$fld," :selected').removeAttr('selected');"),"&#xa;"),
                     "$('#zonalForm').submit();&#xa;",
                     "}&#xa;});&#xa;")

@@ -237,7 +237,7 @@ declare function bir:load-file(
                     xdmp:set($condomode, fn:true())
                 )
                 else if ($skip eq fn:true()) then ()
-                else if (starts-with($line, "***CONDO***"))
+                else if (fn:starts-with($line, "***CONDO***") or fn:starts-with($line, "LIST OF CONDOMINIUMS:"))
                 then (xdmp:set($street, ""), 
                     xdmp:set($skip-note,fn:false()),
                     xdmp:set($vicinity, ""),

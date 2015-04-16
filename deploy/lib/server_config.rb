@@ -1492,11 +1492,17 @@ private
   end
 
   def deploy_content
-    count = load_data @properties["ml.data.dir"],
+    dir = find_arg(['--dir'])
+    path = @properties['ml.data.dir']
+    if !dir.blank?
+      path += "/#{dir}"
+    end
+
+    count = load_data path,
                       :remove_prefix => @properties["ml.data.dir"],
                       :db => @properties['ml.content-db'],
                       :permissions => permissions(@properties['ml.app-role'], Roxy::ContentCapability::RU)
-    logger.info "\nLoaded #{count} #{pluralize(count, "document", "documents")} from #{@properties["ml.data.dir"]} to #{xcc.hostname}:#{xcc.port}/#{@properties['ml.content-db']}\n"
+    logger.info "\nLoaded #{count} #{pluralize(count, "document", "documents")} from #{path} to #{xcc.hostname}:#{xcc.port}/#{@properties['ml.content-db']}\n"
   end
 
   def clean_content
