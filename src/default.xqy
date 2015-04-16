@@ -106,12 +106,21 @@ declare function local:combobox(
     )
     let $next-field := $fields[fn:index-of($fields,$name) + 1]
     let $_ := xdmp:trace("bir-query","nextfield=" || $next-field)
-    let $param := 
+    let $extra-vals := 
+        if ($next-field eq "street" and $param eq "" and map:contains($params,"street")) 
+        then (
+            let $q-extra := cts:element-value-query(xs:QName("street"), map:get($params,"street"))
+            return (cts:element-values(xs:QName($name),"",(),cts:and-query(($q, $q-extra))),map:put($counters,$name,1))
+        ) else ()
+    let $vals := if (fn:count($extra-vals) > 1) then $extra-vals else $vals
+    let $param := if (fn:count($extra-vals) = 1) then $extra-vals else $param
+(:    let $param := 
         if ($next-field eq "street" and $param eq "" and map:contains($params,"street")) 
         then (
             let $q-extra := cts:element-value-query(xs:QName("street"), map:get($params,"street"))
             return (cts:element-values(xs:QName($name),"",(),cts:and-query(($q, $q-extra))),map:put($counters,$name,1))
         ) else $param
+:)
     return 
         <div class="form-group">
             <label for="{$name}" class="col-sm-2 control-label">{ $labels[fn:index-of($fields,$name)] }:</label>
