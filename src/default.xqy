@@ -13,6 +13,7 @@ declare variable $counters := map:map();
 declare variable $fields := ( "rdo", "barangay", "street", "condo", "vicinity", "class" );
 declare variable $labels := ( "RDO", "Barangay", "Street", "Condo/Townhouse", "Vicinity", "Class" );
 :)
+
 declare function local:pretty-class(
     $code as xs:string
 ) as xs:string
@@ -44,7 +45,7 @@ declare function local:make-query(
 (:        let $param := xdmp:get-request-field($field):)
         let $param := map:get($params,$field)
         let $_ := xdmp:trace("bir-query",fn:concat("field ", $field,"=",$param))
-        return if ($param) then cts:element-value-query(xs:QName($field), $param) else (),
+        return if ($param) then cts:element-value-query(xs:QName($field), $param, ("exact")) else (),
         cts:collection-query(("listings"))
     ))
 };
@@ -58,10 +59,6 @@ declare function local:combobox(
 ) as node()
 {
     (: http://www.scriptol.com/html5/combobox.php :)
-    let $_ := ( 
-        xdmp:trace("bir-query",fn:concat("field=", $name)),
-        xdmp:trace("bir-query",fn:concat("param=", $param))
-    )
     let $q := local:make-query($name,for $field in fn:subsequence($fields, 1, fn:index-of($fields,$name)-1) return $field,$params)
     let $_ := xdmp:trace("bir-query",fn:concat("query=", $q))
 
@@ -82,14 +79,13 @@ declare function local:combobox(
             else ()
         )
         else cts:element-values(xs:QName($name), "", (), $q)
-        
-    let $_ := xdmp:trace("bir-query",fn:concat($name, "::vals=", fn:string-join($vals,",")))
     
     let $count := fn:count($vals)
     let $_ := map:put($counters,$name,if ($param ne "") then 1 else $count)
     let $_ := if ($count eq 1) then map:put($params,$name,$vals) else ()
-    let $_ := xdmp:trace("bir-query",fn:concat($name, "::count=", $count))
-    let $_ := for $key in map:keys($counters) return xdmp:trace("bir-query",fn:concat("local:combobox::key[",$key,"] has value[",map:get($counters,$key),"]"))
+    let $_ := 
+        for $key in map:keys($counters) 
+        return xdmp:trace("bir-query",fn:concat("local:combobox::key[",$key,"] has value[",map:get($counters,$key),"]"))
 (:    let $notapplicable := ($count = 0) or ($count = 1 and $vals = ""):)
 (:    let $notapplicable := (
       ($name = "condo" and (xdmp:get-request-field("street") ne "" or $count = 0)) or
@@ -109,18 +105,15 @@ declare function local:combobox(
     let $extra-vals := 
         if ($next-field eq "street" and $param eq "" and map:contains($params,"street")) 
         then (
-            let $q-extra := cts:element-value-query(xs:QName("street"), map:get($params,"street"))
-            return (cts:element-values(xs:QName($name),"",(),cts:and-query(($q, $q-extra))),map:put($counters,$name,1))
+            let $q-extra := cts:element-value-query(xs:QName("street"), map:get($params,"street"), ("exact"))
+            return (
+                cts:element-values(xs:QName($name),"",(),cts:and-query(($q, $q-extra)))
+            )
         ) else ()
-    let $vals := if (fn:count($extra-vals) > 1) then $extra-vals else $vals
-    let $param := if (fn:count($extra-vals) = 1) then $extra-vals else $param
-(:    let $param := 
-        if ($next-field eq "street" and $param eq "" and map:contains($params,"street")) 
-        then (
-            let $q-extra := cts:element-value-query(xs:QName("street"), map:get($params,"street"))
-            return (cts:element-values(xs:QName($name),"",(),cts:and-query(($q, $q-extra))),map:put($counters,$name,1))
-        ) else $param
-:)
+    let $extra-vals-cnt := fn:count($extra-vals)
+    let $_ := if ($extra-vals-cnt != 0) then map:put($counters,$name,$extra-vals-cnt) else ()
+    let $vals := if ($extra-vals-cnt > 1) then $extra-vals else $vals
+    let $param := if ($extra-vals-cnt = 1) then $extra-vals else $param
     return 
         <div class="form-group">
             <label for="{$name}" class="col-sm-2 control-label">{ $labels[fn:index-of($fields,$name)] }:</label>
@@ -133,7 +126,7 @@ declare function local:combobox(
                     return
                     <option> {
                         attribute value { if ($opt = ("(select)", "N/A")) then "" else $opt },
-                        if (($param ne "" and $opt = $param) or $count = 1) 
+                        if (($param ne "" and $opt eq $param) or $count = 1) 
                         then attribute selected { "" }
                         else (),
                         if ($name = "class") then local:pretty-class($opt) else $opt
@@ -168,26 +161,20 @@ let $params := map:new((
     if ($class) then map:entry("class",$class) else ()
 ))
 
-let $_ := xdmp:log($params,"debug")
-
 let $date-q := if (fn:empty($date) or $date eq "") then () 
-(:    then cts:and-query((
-        cts:element-attribute-range-query(xs:QName("start-date"),xs:QName("iso-date"),"<=",xs:date(fn:substring(xs:string(fn:current-date()),1,10))),
-        cts:element-attribute-range-query(xs:QName("end-date"),xs:QName("iso-date"),">=",xs:date(fn:substring(xs:string(fn:current-date()),1,10)))
-    )) :)
     else cts:and-query((
         cts:element-attribute-range-query(xs:QName("start-date"),xs:QName("iso-date"),"<=",xs:date($date)),
         cts:element-attribute-range-query(xs:QName("end-date"),xs:QName("iso-date"),">=",xs:date($date))
     ))
 let $q :=
     cts:and-query((
-        if ($rdo) then cts:element-value-query(xs:QName("rdo"), $rdo) else (),
-        if ($city) then cts:element-value-query(xs:QName("city"), $city) else (),
-        if ($barangay) then cts:element-value-query(xs:QName("barangay"), $barangay) else (),
-        if ($street) then cts:element-value-query(xs:QName("street"), $street) else (),
-        if ($condo) then cts:element-value-query(xs:QName("condo"), $condo) else (),
-        if ($vicinity) then cts:element-value-query(xs:QName("vicinity"), $vicinity) else (),
-        if ($class) then cts:element-value-query(xs:QName("class"), $class) else ()
+        if ($rdo) then cts:element-value-query(xs:QName("rdo"), $rdo, ("exact")) else (),
+        if ($city) then cts:element-value-query(xs:QName("city"), $city, ("exact")) else (),
+        if ($barangay) then cts:element-value-query(xs:QName("barangay"), $barangay, ("exact")) else (),
+        if ($street) then cts:element-value-query(xs:QName("street"), $street, ("exact")) else (),
+        if ($condo) then cts:element-value-query(xs:QName("condo"), $condo, ("exact")) else (),
+        if ($vicinity) then cts:element-value-query(xs:QName("vicinity"), $vicinity, ("exact")) else (),
+        if ($class) then cts:element-value-query(xs:QName("class"), $class, ("exact")) else ()
     ))
   
 return
@@ -370,6 +357,7 @@ return
                     "select: function (event, ui) {&#xa;",
                     fn:string-join(
                     for $fld in fn:subsequence($fields,fn:index-of($fields,$field)+1)
+                    where fn:not($field eq "barangay" and $fld eq "street" and $street ne "")
                     return fn:concat("$('#",$fld," :selected').removeAttr('selected');"),"&#xa;"),
                     "$('#zonalForm').submit();&#xa;",
                     "}&#xa;});&#xa;")
