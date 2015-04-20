@@ -278,14 +278,8 @@ return
         let $nr_of_hits := if (fn:empty($hits)) then 0 else cts:remainder($hits[1])
         let $_ := xdmp:trace("bir-query",fn:concat("NR OF HITS:",$nr_of_hits))
         let $listings :=
-            if ($nr_of_hits = 1 or (
-                    (map:contains($counters,"class") and map:get($counters,"class") eq 1) and
-                    (map:contains($counters,"vicinity") and map:get($counters,"vicinity") eq 1) and (
-                        (map:contains($counters,"class") and map:get($counters,"class") eq 1) and
-                        (map:contains($counters,"vicinity") and map:get($counters,"vicinity") eq 1)
-                    )
-                )
-            )
+            if ($nr_of_hits = 1 or
+                fn:max(for $key in map:keys($counters) return map:get($counters,$key)) eq 1)
             then (cts:search(fn:collection("listings"), 
                 cts:and-query(($q,if (fn:empty($date) or $date eq "") then () else $date-q)),"unfiltered"),
                 xdmp:trace("bir-query",fn:concat("GET_LISTINGS::cts:search(fn:collection('listings'), 
