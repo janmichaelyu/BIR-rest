@@ -96,7 +96,8 @@ declare function local:combobox(
     let $notapplicable := (
       ($name = "condo" and (map:contains($params,"street") or $count = 0)) or
       ($name = "street" and (map:contains($params,"condo") or $count = 0)) or
-      ($name = "vicinity" and $count = 0) or
+      ($name = "vicinity" and (not(map:contains($params,"street") or map:contains($params,"condo")) or $count = 0)) or
+(:      ($name = "vicinity" and $count = 0) or :)
       ($name = "class" and $count = 0)
     )
     let $next-field := $fields[fn:index-of($fields,$name) + 1]
