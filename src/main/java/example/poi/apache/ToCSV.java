@@ -393,13 +393,13 @@ public class ToCSV {
         boolean exists = disallowedFile.exists();
 
         if (exists && disallowed.size() == 0) {
-            logger.info("initializing disallowed lines");
+            logger.debug("initializing disallowed lines");
 
             try (BufferedReader br = new BufferedReader(new FileReader(
                     disallowedFile))) {
                 String line = br.readLine();
                 while (line != null) {
-                    logger.info(line);
+                    logger.debug(line);
                     disallowed.add(line);
                     line = br.readLine();
                 }
@@ -510,6 +510,9 @@ public class ToCSV {
         ArrayList<String> line = null;
         StringBuffer buffer = null;
         String csvLineElement = null;
+        ArrayList<String> elementBuffer = new ArrayList<String>(2);
+        elementBuffer.add("");
+        elementBuffer.add("");
         try {
 
             logger.info("Saving the CSV file [" + file.getName() + "]");
@@ -521,6 +524,7 @@ public class ToCSV {
             // Step through the elements of the ArrayList that was used to hold
             // all of the data recovered from the Excel workbooks' sheets, rows
             // and cells.
+
             for (int i = 0; i < this.csvData.size(); i++) {
                 buffer = new StringBuffer();
 
@@ -546,6 +550,35 @@ public class ToCSV {
                 for (int j = 0; j < this.maxRowWidth; j++) {
                     if (line.size() > j) {
                         csvLineElement = line.get(j);
+
+                        boolean empty = isEmpty(csvLineElement);
+                        String currentFirstElement = line.get(0);
+                        boolean elementAllowed = isAllowed(currentFirstElement);
+                        
+                        // cache data for empty street name and vicinity in succeeding lines
+                        if (j < 2 && !empty) {
+                            if (elementAllowed) {
+                                elementBuffer.set(j, csvLineElement);
+                            } else {
+                                // reset cached data
+                                elementBuffer.set(j, "");
+                            }
+                        }
+
+                        // use cached data when street name element is empty
+                        if (j == 0 && empty) {
+                            csvLineElement = elementBuffer.get(j);
+                        }
+                        
+                        // use cached data for vicinity 
+                        if (j == 1 && empty) {
+                            if (isEmpty(currentFirstElement)) {
+                                // only add vicinity when street name is the
+                                // same
+                                csvLineElement = elementBuffer.get(j);
+                            }
+                        }
+
                         if (csvLineElement != null) {
                             buffer.append(this
                                     .escapeEmbeddedCharacters(csvLineElement));
@@ -576,6 +609,10 @@ public class ToCSV {
                 bw.close();
             }
         }
+    }
+
+    private boolean isEmpty(String csvLineElement) {
+        return csvLineElement == null || csvLineElement.length() == 0;
     }
 
     private boolean isAllowed(String csvLineString) {
