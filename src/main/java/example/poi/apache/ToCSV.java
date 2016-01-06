@@ -26,7 +26,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -40,6 +43,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.jsoup.select.Evaluator.IsRoot;
+
+import static java.nio.file.StandardCopyOption.*;
 
 /**
  * Demonstrates <em>one</em> way to convert an Excel spreadsheet into a CSV
@@ -137,34 +143,36 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
  */
 public class ToCSV {
 
-    private Workbook                     workbook             = null;
-    private ArrayList<ArrayList<String>> csvData              = null;
-    private int                          maxRowWidth          = 0;
-    private int                          formattingConvention = 0;
-    private DataFormatter                formatter            = null;
-    private FormulaEvaluator             evaluator            = null;
-    private String                       separator            = null;
+    private static final String                           UTF8                 = ".utf8";
+    private Workbook                                      workbook             = null;
+    private int                                           maxRowWidth          = 0;
+    private int                                           formattingConvention = 0;
+    private DataFormatter                                 formatter            = null;
+    private FormulaEvaluator                              evaluator            = null;
+    private String                                        separator            = null;
 
-    private static final String          CSV_FILE_EXTENSION   = ".csv";
-    private static final String          DEFAULT_SEPARATOR    = ",";
+    private static final String                           CSV_FILE_EXTENSION   = ".csv";
+    private static final String                           DEFAULT_SEPARATOR    = ",";
 
-    private static final Logger          logger               = LogManager
-                                                                      .getLogger(ToCSV.class);
+    private static final Logger                           logger               = LogManager
+                                                                                       .getLogger(ToCSV.class);
 
     /**
      * Identifies that the CSV file should obey Excel's formatting conventions
      * with regard to escaping certain embedded characters - the field
      * separator, speech mark and end of line (EOL) character
      */
-    public static final int              EXCEL_STYLE_ESCAPING = 0;
+    public static final int                               EXCEL_STYLE_ESCAPING = 0;
 
     /**
      * Identifies that the CSV file should obey UNIX formatting conventions with
      * regard to escaping certain embedded characters - the field separator and
      * end of line (EOL) character
      */
-    public static final int              UNIX_STYLE_ESCAPING  = 1;
-    private ArrayList<String>            disallowed           = new ArrayList<String>();       ;
+    public static final int                               UNIX_STYLE_ESCAPING  = 1;
+
+    private ArrayList<String>                             disallowed           = new ArrayList<String>();
+    private HashMap<String, ArrayList<ArrayList<String>>> csvSheetData         = null;
 
     /**
      * Process the contents of a folder, convert the contents of each Excel
@@ -349,7 +357,7 @@ public class ToCSV {
         if (source.isDirectory()) {
             // Get a list of all of the Excel spreadsheet files (workbooks) in
             // the source folder/directory
-            filesList = source.listFiles(new ExcelFilenameFilter());
+            filesList = source.listFiles(new ExcelXmlFilenameFilter());
         } else {
             // Assume that it must be a file handle - although there are other
             // options the code should perhaps check - and store the reference
@@ -368,23 +376,44 @@ public class ToCSV {
         // (.xls) and the other a SpreadsheetML file (.xlsx), then the names
         // for both CSV files will be identical and one CSV file will,
         // therefore, over-write the other.
-        for (File excelFile : filesList) {
-            // Open the workbook
-            this.openWorkbook(excelFile);
+        for (File sourceFile : filesList) {
+            if (sourceFile.getName().endsWith(".xml")) {
+                // copy to destination
+                Files.copy(
+                        sourceFile.toPath(),
+                        destination.toPath().resolve(
+                                sourceFile.toPath().getFileName()),
+                        REPLACE_EXISTING);
+            } else {
+                // Open the workbook
+                this.openWorkbook(sourceFile);
 
-            // Convert it's contents into a CSV file
-            this.convertToCSV();
+                // Convert it's contents into a CSV file
+                this.convertToCSV();
 
-            // Build the name of the csv folder from that of the Excel workbook.
-            // Simply replace the .xls or .xlsx file extension with .csv
-            destinationFilename = excelFile.getName();
-            destinationFilename = destinationFilename.substring(0,
-                    destinationFilename.lastIndexOf("."))
-                    + ToCSV.CSV_FILE_EXTENSION;
+                // Build the name of the csv folder from that of the Excel
+                // workbook.
+                // Simply replace the .xls or .xlsx file extension with .csv
 
-            // Save the CSV file away using the newly constricted file name
-            // and to the specified directory.
-            this.saveCSVFile(new File(destination, destinationFilename));
+                String excelFileName = sourceFile.getName();
+
+                for (Iterator<String> iterator = csvSheetData.keySet()
+                        .iterator(); iterator.hasNext();) {
+                    String sheetName = iterator.next();
+                    destinationFilename = excelFileName.substring(0,
+                            excelFileName.lastIndexOf("."))
+                            + " "
+                            + sheetName
+                            + UTF8 + ToCSV.CSV_FILE_EXTENSION;
+
+                    // Save the CSV file away using the newly constricted file
+                    // name
+                    // and to the specified directory.
+
+                    File file = new File(destination, destinationFilename);
+                    this.saveCSVFile(file, sheetName);
+                }
+            }
         }
     }
 
@@ -404,7 +433,7 @@ public class ToCSV {
                     line = br.readLine();
                 }
             } catch (Exception e) {
-                logger.error(e);
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -455,12 +484,13 @@ public class ToCSV {
         Sheet sheet = null;
         Row row = null;
         int lastRowNum = 0;
-        this.csvData = new ArrayList<ArrayList<String>>();
 
         logger.info("Converting files contents to CSV format.");
 
         // Discover how many sheets there are in the workbook....
         int numSheets = this.workbook.getNumberOfSheets();
+
+        this.csvSheetData = new HashMap<String, ArrayList<ArrayList<String>>>();
 
         // and then iterate through them.
         for (int i = 0; i < numSheets; i++) {
@@ -470,7 +500,7 @@ public class ToCSV {
             sheet = this.workbook.getSheetAt(i);
 
             String sheetName = sheet.getSheetName();
-            // logger.info("sheetName: " + sheetName);
+            int indexOfParenthesis = sheetName.indexOf('(');
 
             boolean noticeSheet = sheetName.startsWith("NOTICE");
             if (!noticeSheet && sheet.getPhysicalNumberOfRows() > 0) {
@@ -481,10 +511,20 @@ public class ToCSV {
                 // Recover a reference to the row and then call another method
                 // which will strip the data from the cells and build lines
                 // for inclusion in the resylting CSV file.
-                lastRowNum = sheet.getLastRowNum();
-                for (int j = 0; j <= lastRowNum; j++) {
-                    row = sheet.getRow(j);
-                    this.rowToCSV(row);
+
+                if (indexOfParenthesis != -1) {
+                    String truncated = sheetName.substring(indexOfParenthesis)
+                            .trim();
+
+                    logger.info("truncated : " + truncated);
+                    this.csvSheetData.put(truncated,
+                            new ArrayList<ArrayList<String>>());
+
+                    lastRowNum = sheet.getLastRowNum();
+                    for (int j = 0; j <= lastRowNum; j++) {
+                        row = sheet.getRow(j);
+                        this.rowToCSV(truncated, row);
+                    }
                 }
             }
         }
@@ -497,17 +537,19 @@ public class ToCSV {
      * @param file
      *            An instance of the File class that encapsulates a handle
      *            referring to the CSV file.
+     * @param sheetName
      * @throws java.io.FileNotFoundException
      *             Thrown if the file cannot be found.
      * @throws java.io.IOException
      *             Thrown to indicate and error occurred in the underylying file
      *             system.
      */
-    private void saveCSVFile(File file) throws FileNotFoundException,
-            IOException {
+    private void saveCSVFile(File file, String sheetName)
+            throws FileNotFoundException, IOException {
         FileWriter fw = null;
         BufferedWriter bw = null;
         ArrayList<String> line = null;
+        ArrayList<String> prevLine = null;
         StringBuffer buffer = null;
         String csvLineElement = null;
         ArrayList<String> elementBuffer = new ArrayList<String>(2);
@@ -525,7 +567,9 @@ public class ToCSV {
             // all of the data recovered from the Excel workbooks' sheets, rows
             // and cells.
 
-            for (int i = 0; i < this.csvData.size(); i++) {
+            ArrayList<ArrayList<String>> currentCsvSheetData = this.csvSheetData
+                    .get(sheetName);
+            for (int i = 0; i < currentCsvSheetData.size(); i++) {
                 buffer = new StringBuffer();
 
                 // Get an element from the ArrayList that contains the data for
@@ -546,19 +590,33 @@ public class ToCSV {
                 // the for loop to ensure that the ArrayList contains data to be
                 // processed. If it does, then an element will be recovered and
                 // appended to the StringBuffer.
-                line = this.csvData.get(i);
+                line = currentCsvSheetData.get(i);
+                if (i > 0) {
+                    prevLine = currentCsvSheetData.get(i - 1);
+                }
+
+                boolean allFourEmpty = line.size() > 3 && isEmpty(line.get(0))
+                        && (isEmpty(line.get(1))) && (isEmpty(line.get(2)))
+                        && (isEmpty(line.get(3)));
                 for (int j = 0; j < this.maxRowWidth; j++) {
                     if (line.size() > j) {
+
                         csvLineElement = line.get(j);
 
-                        boolean empty = isEmpty(csvLineElement);
+                        boolean isCurrentEmpty = isEmpty(csvLineElement);
                         String currentFirstElement = line.get(0);
-                        boolean elementAllowed = isAllowed(currentFirstElement);
-                        
-                        // cache data for empty street name and vicinity in succeeding lines
-                        if (j < 2 && !empty) {
-                            if (elementAllowed) {
+                        boolean lineAllowed = isAllowed(currentFirstElement);
+
+                        // cache data for empty street name and vicinity in
+                        // succeeding lines
+                        if (j < 2 && !isCurrentEmpty) {
+                            if (lineAllowed) {
                                 elementBuffer.set(j, csvLineElement);
+                                
+                                //reset vicinity whenever street is changed
+                                if (j == 0) {
+                                    elementBuffer.set(1, "");
+                                }
                             } else {
                                 // reset cached data
                                 elementBuffer.set(j, "");
@@ -566,12 +624,12 @@ public class ToCSV {
                         }
 
                         // use cached data when street name element is empty
-                        if (j == 0 && empty) {
+                        if (j == 0 && isCurrentEmpty) {
                             csvLineElement = elementBuffer.get(j);
                         }
-                        
-                        // use cached data for vicinity 
-                        if (j == 1 && empty) {
+
+                        // use cached data for vicinity
+                        if (j == 1 && isCurrentEmpty) {
                             if (isEmpty(currentFirstElement)) {
                                 // only add vicinity when street name is the
                                 // same
@@ -588,18 +646,18 @@ public class ToCSV {
                         buffer.append(this.separator);
                     }
                 }
-
                 // Once the line is built, write it away to the CSV file.
                 String trimmed = buffer.toString().trim();
                 boolean allowed = isAllowed(trimmed);
-                if (allowed) {
+                if (!allFourEmpty && allowed) {
                     bw.write(trimmed);
                 }
 
                 // Condition the inclusion of new line characters so as to
                 // avoid an additional, superfluous, new line at the end of
                 // the file.
-                if (allowed && i < (this.csvData.size() - 1)) {
+                if (!allFourEmpty && allowed
+                        && i < (currentCsvSheetData.size() - 1)) {
                     bw.newLine();
                 }
             }
@@ -640,11 +698,10 @@ public class ToCSV {
      *            encapsulates information about a row of cells recovered from
      *            an Excel workbook.
      */
-    private void rowToCSV(Row row) {
+    private void rowToCSV(String sheetName, Row row) {
         Cell cell = null;
         int lastCellNum = 0;
         ArrayList<String> csvLine = new ArrayList<String>();
-
         // Check to ensure that a row was recovered from the sheet as it is
         // possible that one or more rows between other populated rows could be
         // missing - blank. If the row does contain cells then...
@@ -678,7 +735,7 @@ public class ToCSV {
             }
         }
 
-        this.csvData.add(csvLine);
+        this.csvSheetData.get(sheetName).add(csvLine);
     }
 
     /**
@@ -863,7 +920,7 @@ public class ToCSV {
      * call to the listFiles() method when made on an instance of the File class
      * and that object refers to a folder/directory
      */
-    class ExcelFilenameFilter implements FilenameFilter {
+    class ExcelXmlFilenameFilter implements FilenameFilter {
 
         /**
          * Determine those files that will be returned by a call to the
@@ -889,7 +946,8 @@ public class ToCSV {
          *         returned in all other instances.
          */
         public boolean accept(File file, String name) {
-            return (name.endsWith(".xls") || name.endsWith(".xlsx"));
+            return (name.endsWith(".xls") || name.endsWith(".xlsx") || name
+                    .endsWith(".xml"));
         }
     }
 }
