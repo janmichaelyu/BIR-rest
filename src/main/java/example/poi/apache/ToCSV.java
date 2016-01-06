@@ -17,6 +17,8 @@
 
 package example.poi.apache;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,11 +29,9 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Stack;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,9 +43,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.jsoup.select.Evaluator.IsRoot;
-
-import static java.nio.file.StandardCopyOption.*;
 
 /**
  * Demonstrates <em>one</em> way to convert an Excel spreadsheet into a CSV
@@ -402,7 +399,7 @@ public class ToCSV {
                     String sheetName = iterator.next();
                     destinationFilename = excelFileName.substring(0,
                             excelFileName.lastIndexOf("."))
-                            + " "
+                            + "."
                             + sheetName
                             + UTF8 + ToCSV.CSV_FILE_EXTENSION;
 
@@ -513,8 +510,7 @@ public class ToCSV {
                 // for inclusion in the resylting CSV file.
 
                 if (indexOfParenthesis != -1) {
-                    String truncated = sheetName.substring(indexOfParenthesis)
-                            .trim();
+                    String truncated = sheetName.trim();
 
                     logger.info("truncated : " + truncated);
                     this.csvSheetData.put(truncated,
@@ -647,7 +643,7 @@ public class ToCSV {
                     }
                 }
                 // Once the line is built, write it away to the CSV file.
-                String trimmed = buffer.toString().trim();
+                String trimmed = new String(buffer.toString().trim().getBytes("UTF8"));
                 boolean allowed = isAllowed(trimmed);
                 if (!allFourEmpty && allowed) {
                     bw.write(trimmed);
