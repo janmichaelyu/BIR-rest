@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <csvfiles>
-	<csvfiles>
 	<csvfile>
 		<filename>RDO No. 30 - Binondo.Sheet 5 (DO 21-03).utf8.csv</filename>
 		<start-date>Present</start-date>
@@ -473,7 +472,7 @@
 	<csvfile>
 		<filename>RDO  No. 45 - MarikinaCity.Sheet 3 (DO 110-95).utf8.csv</filename>
 		<start-date>14-10-1995</start-date>
-		<end-date>06-08-19996</end-date>
+		<end-date>06-08-1996</end-date>
 		<do-no>110-95</do-no>
 		<revision>2nd</revision>
 	</csvfile>
@@ -521,36 +520,36 @@
 	</csvfile>
 	<csvfile>
 		<filename>RDO No. 42 - San Juan.Sheet 1 (DO 41-03).utf8.csv</filename>
-		<start-date>03-01-2004</start-date>
+		<start-date>01-03-2004</start-date>
 		<end-date>Present</end-date>
 		<do-no>41-03</do-no>
 		<revision>4th</revision>
 	</csvfile>
 	<csvfile>
 		<filename>RDO No. 42 - San Juan.Sheet 2 (DO 76-96).utf8.csv</filename>
-		<start-date>09-16-1996</start-date>
-		<end-date>02-29-2004</end-date>
+		<start-date>16-09-1996</start-date>
+		<end-date>29-02-2004</end-date>
 		<do-no>76-96</do-no>
 		<revision>3rd</revision>
 	</csvfile>
 	<csvfile>
 		<filename>RDO No. 42 - San Juan.Sheet 3 (DO 31-93).utf8.csv</filename>
-		<start-date>06-23-1993</start-date>
+		<start-date>23-06-1993</start-date>
 		<end-date>15-09-1996</end-date>
 		<do-no>31-93</do-no>
 		<revision>2nd</revision>
 	</csvfile>
 	<csvfile>
 		<filename>RDO No. 42 - San Juan.Sheet 4 (DO 20-90).utf8.csv</filename>
-		<start-date>04-26-1990</start-date>
-		<end-date>06-22-1993</end-date>
+		<start-date>26-04-1990</start-date>
+		<end-date>22-06-1993</end-date>
 		<do-no>20-90</do-no>
 		<revision>1st</revision>
 	</csvfile>
 	<csvfile>
 		<filename>RDO No. 42 - San Juan.Sheet 5 (DO 90-88).utf8.csv</filename>
-		<start-date>11-23-1988</start-date>
-		<end-date>04-25-1990</end-date>
+		<start-date>23-11-1988</start-date>
+		<end-date>25-04-1990</end-date>
 		<do-no>90-88</do-no>
 		<revision>Initial</revision>
 	</csvfile>
@@ -632,21 +631,21 @@
 		<revision>Initial</revision>
 	</csvfile>
 	<csvfile>
-		<filename>No 46 - Cainta Taytay ANGONO CAINTA TAYTAY.2nd Rev 3-1-2004.utf8.csv</filename>
+		<filename>RDO No 46 - Cainta Taytay ANGONO CAINTA TAYTAY.2nd Rev 3-1-2004.utf8.csv</filename>
 		<start-date>07-02-2003</start-date>
 		<end-date>Present</end-date>
 		<do-no>43-03</do-no>
 		<revision>2nd</revision>
 	</csvfile>
 	<csvfile>
-		<filename>No 46 - Cainta Taytay ANGONO CAINTA TAYTAY.1st Rev 5-15-1996.utf8.csv</filename>
+		<filename>RDO No 46 - Cainta Taytay ANGONO CAINTA TAYTAY.1st Rev 5-15-1996.utf8.csv</filename>
 		<start-date>10-01-1996</start-date>
 		<end-date>06-02-2003</end-date>
 		<do-no>26-96</do-no>
 		<revision>1st</revision>
 	</csvfile>
 	<csvfile>
-		<filename>No 46 - Cainta Taytay ANGONO CAINTA TAYTAY.Initial 9-16-1991.utf8.csv</filename>
+		<filename>RDO No 46 - Cainta Taytay ANGONO CAINTA TAYTAY.Initial 9-16-1991.utf8.csv</filename>
 		<start-date>07-01-1991</start-date>
 		<end-date>09-01-1996</end-date>
 		<do-no>26-96</do-no>
@@ -830,7 +829,7 @@
 	<csvfile>
 		<filename>RDO No. 43B - West Pasig.Sheet 3(DO #30-93).utf8.csv</filename>
 		<start-date>23-06-1993</start-date>
-		<end-date>11-078-1996</end-date>
+		<end-date>11-07-1996</end-date>
 		<do-no>30-93</do-no>
 		<revision>2nd</revision>
 	</csvfile>
@@ -1143,19 +1142,3 @@
 		<revision>Initial</revision>
 	</csvfile>
 </csvfiles>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
