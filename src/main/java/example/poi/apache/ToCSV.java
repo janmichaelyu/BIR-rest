@@ -149,7 +149,7 @@ public class ToCSV {
     private String                                        separator            = null;
 
     private static final String                           CSV_FILE_EXTENSION   = ".csv";
-    private static final String                           DEFAULT_SEPARATOR    = ",";
+    private static final String                           DEFAULT_SEPARATOR    = ";";
 
     private static final Logger                           logger               = LogManager
                                                                                        .getLogger(ToCSV.class);
@@ -169,6 +169,7 @@ public class ToCSV {
     public static final int                               UNIX_STYLE_ESCAPING  = 1;
 
     private ArrayList<String>                             disallowed           = new ArrayList<String>();
+    private ArrayList<String>                             condoString          = new ArrayList<String>();
     private HashMap<String, ArrayList<ArrayList<String>>> csvSheetData         = null;
 
     /**
@@ -312,6 +313,7 @@ public class ToCSV {
             IllegalArgumentException, InvalidFormatException {
 
         initDisallowed();
+        initCondoString();
 
         File source = new File(strSource);
         File destination = new File(strDestination);
@@ -435,6 +437,27 @@ public class ToCSV {
         }
     }
 
+    private void initCondoString() {
+        File condoStringFile = new File("src/main/resources/condoReplace.csv");
+        boolean exists = condoStringFile.exists();
+
+        if (exists && disallowed.size() == 0) {
+            logger.debug("initializing condo string for replace lines");
+
+            try (BufferedReader br = new BufferedReader(new FileReader(
+                    condoStringFile))) {
+                String line = br.readLine();
+                while (line != null) {
+                    logger.debug(line);
+                    condoString.add(line);
+                    line = br.readLine();
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
+
     /**
      * Open an Excel workbook ready for conversion.
      *
@@ -497,7 +520,6 @@ public class ToCSV {
             sheet = this.workbook.getSheetAt(i);
 
             String sheetName = sheet.getSheetName();
-            int indexOfParenthesis = sheetName.indexOf('(');
 
             boolean noticeSheet = sheetName.startsWith("NOTICE");
             if (!noticeSheet && sheet.getPhysicalNumberOfRows() > 0) {
@@ -509,18 +531,16 @@ public class ToCSV {
                 // which will strip the data from the cells and build lines
                 // for inclusion in the resylting CSV file.
 
-                if (indexOfParenthesis != -1) {
-                    String truncated = sheetName.trim();
+                String truncated = sheetName.trim().replaceAll(" +", " ");
 
-                    logger.info("truncated : " + truncated);
-                    this.csvSheetData.put(truncated,
-                            new ArrayList<ArrayList<String>>());
+                logger.info("truncated : " + truncated);
+                this.csvSheetData.put(truncated,
+                        new ArrayList<ArrayList<String>>());
 
-                    lastRowNum = sheet.getLastRowNum();
-                    for (int j = 0; j <= lastRowNum; j++) {
-                        row = sheet.getRow(j);
-                        this.rowToCSV(truncated, row);
-                    }
+                lastRowNum = sheet.getLastRowNum();
+                for (int j = 0; j <= lastRowNum; j++) {
+                    row = sheet.getRow(j);
+                    this.rowToCSV(truncated, row);
                 }
             }
         }
@@ -545,7 +565,6 @@ public class ToCSV {
         FileWriter fw = null;
         BufferedWriter bw = null;
         ArrayList<String> line = null;
-        ArrayList<String> prevLine = null;
         StringBuffer buffer = null;
         String csvLineElement = null;
         ArrayList<String> elementBuffer = new ArrayList<String>(2);
@@ -587,14 +606,11 @@ public class ToCSV {
                 // processed. If it does, then an element will be recovered and
                 // appended to the StringBuffer.
                 line = currentCsvSheetData.get(i);
-                if (i > 0) {
-                    prevLine = currentCsvSheetData.get(i - 1);
-                }
 
                 boolean allFourEmpty = line.size() > 3 && isEmpty(line.get(0))
                         && (isEmpty(line.get(1))) && (isEmpty(line.get(2)))
                         && (isEmpty(line.get(3)));
-                for (int j = 0; j < this.maxRowWidth; j++) {
+                for (int j = 0; j < this.maxRowWidth && j < 5; j++) {
                     if (line.size() > j) {
 
                         csvLineElement = line.get(j);
@@ -608,8 +624,8 @@ public class ToCSV {
                         if (j < 2 && !isCurrentEmpty) {
                             if (lineAllowed) {
                                 elementBuffer.set(j, csvLineElement);
-                                
-                                //reset vicinity whenever street is changed
+
+                                // reset vicinity whenever street is changed
                                 if (j == 0) {
                                     elementBuffer.set(1, "");
                                 }
@@ -643,10 +659,13 @@ public class ToCSV {
                     }
                 }
                 // Once the line is built, write it away to the CSV file.
-                String trimmed = new String(buffer.toString().trim().getBytes("UTF8"));
+                String trimmed = buffer.toString().trim();
                 boolean allowed = isAllowed(trimmed);
                 if (!allFourEmpty && allowed) {
-                    bw.write(trimmed);
+                    if (isForCondoReplace(trimmed)) {
+                        trimmed = "***CONDO***";
+                    }
+                    bw.write(new String(trimmed.getBytes("UTF8")));
                 }
 
                 // Condition the inclusion of new line characters so as to
@@ -654,7 +673,7 @@ public class ToCSV {
                 // the file.
                 if (!allFourEmpty && allowed
                         && i < (currentCsvSheetData.size() - 1)) {
-                    bw.newLine();
+                    bw.write("\r");
                 }
             }
         } finally {
@@ -683,6 +702,22 @@ public class ToCSV {
         }
 
         return allowed;
+    }
+
+    private boolean isForCondoReplace(String csvLineString) {
+        boolean forReplace = false;
+
+        Iterator<String> iterator = condoString.iterator();
+
+        while (iterator.hasNext() && forReplace) {
+            String currentCondoString = iterator.next();
+
+            if (csvLineString.startsWith(currentCondoString)) {
+                forReplace = true;
+            }
+        }
+
+        return forReplace;
     }
 
     /**

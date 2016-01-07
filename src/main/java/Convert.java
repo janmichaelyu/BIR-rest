@@ -1,9 +1,5 @@
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -13,12 +9,8 @@ import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import converter.XlsxToCsv;
 import example.poi.apache.ToCSV;
-import example.poi.apache.XLS2CSVmra;
 
 public class Convert {
     private static final String OUTPUT_DIRECTORY = "output";
@@ -32,6 +24,12 @@ public class Convert {
         if (dataDir.exists()) {
 
             File outputDirectory = processOutputDirectory();
+            
+            try {
+                FileUtils.cleanDirectory(outputDirectory);
+            } catch (IOException e1) {
+                logger.error(e1);
+            } 
 
             Collection<File> listDirs = FileUtils.listFilesAndDirs(dataDir,
                     new NotFileFilter(TrueFileFilter.INSTANCE),

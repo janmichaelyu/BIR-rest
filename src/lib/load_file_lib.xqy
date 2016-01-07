@@ -155,6 +155,7 @@ declare function bir:load-file(
     let $_ :=
         for $raw-line at $i in fn:tokenize($doc, $LINESEP)
         let $line := fn:normalize-space($raw-line)
+		let $_ := xdmp:log(fn:concat("Line: ", $line),"debug")
         where fn:not(
             $line eq "" or 
             fn:starts-with($line,";;;") or 
@@ -169,6 +170,7 @@ declare function bir:load-file(
                     fn:starts-with(fn:upper-case($line), "RD NO.") or 
                     fn:starts-with(fn:upper-case($line), "RDO:"))
                 then (
+					let $_ := xdmp:log(" --- RDO","debug")
                     let $fields := fn:tokenize($line,";")
                     let $modified-line := fn:string-join($fields," ")
                     let $nr := bir:getRDONr($fields[2])
@@ -194,6 +196,7 @@ declare function bir:load-file(
                     fn:starts-with($line, "CITY/MUNICIPALITY:") or
                     fn:starts-with($line, "CITY / MUNICIPALITY:"))
                 then (
+					let $_ := xdmp:log(" --- MUNICIPALITY ","debug")
                     let $fields := fn:tokenize($line, ";")
                     let $city-name := fn:normalize-space($fields[2])
                     return (
@@ -212,6 +215,7 @@ declare function bir:load-file(
                 or fn:starts-with($line, "BARANGAY :") 
                 or fn:starts-with($line, "BARANGAYS:"))
                 then (
+					let $_ := xdmp:log(" --- BARANGAY ","debug")
                     let $fields := fn:tokenize($line, ";")
                     let $extract := xdmp:set($barangay,fn:normalize-space(bir:clean-string($fields[2])))
                     return (
@@ -227,6 +231,8 @@ declare function bir:load-file(
                 )
                 else if (fn:starts-with($line, "CONDOMINIUMS AND TOWNHOUSES") or fn:starts-with($line, "CONDOMINIUMS &amp; TOWNHOUSES"))
                 then (
+					let $_ := xdmp:log(" --- CONDOMINIUMS AND TOWNHOUSES ","debug")
+					return (
                     xdmp:set($barangay,"CONDOMINIUMS AND TOWNHOUSES"),
                     xdmp:set($street, ""), 
                     xdmp:set($skip-note,fn:false()),
@@ -234,27 +240,36 @@ declare function bir:load-file(
                     xdmp:set($class, ""), 
                     xdmp:set($rev, "0.0"), 
                     xdmp:set($note,""),
-                    xdmp:set($condomode, fn:true())
+                    xdmp:set($condomode, fn:true()))
                 )
                 else if ($skip eq fn:true()) then ()
                 else if (fn:starts-with($line, "***CONDO***") or fn:starts-with($line, "LIST OF CONDOMINIUMS:"))
                 then (xdmp:set($street, ""), 
+					let $_ := xdmp:log(" --- *** CONDO *** ","debug")
+					return (
                     xdmp:set($skip-note,fn:false()),
                     xdmp:set($vicinity, ""),
                     xdmp:set($class, ""), 
                     xdmp:set($rev, "0.0"), 
                     xdmp:set($note,""),
                     xdmp:set($condomode, fn:true())
+					)
                 )
                 else if (fn:starts-with(fn:upper-case($line),";;Effectivity Date;") or fn:matches(fn:upper-case($line),";;\d+-[A-Z]+-\d+;"))
-                then ()
+                then (
+					let $_ := xdmp:log(" --- effectivity date","debug")
+					return ()
+				)
                 else if (fn:starts-with(fn:upper-case($line), ";V I C I N I T Y;") or
                     fn:starts-with(fn:upper-case($line), "STREET/SUBDIVISION;") or 
                     fn:starts-with(fn:upper-case($line), "STREET NAME/;") or 
                     fn:starts-with(fn:upper-case($line), "SUBDIVISION;") or 
                     fn:starts-with(fn:upper-case($line), "SUBDIVISIONS;") or 
                     fn:starts-with(fn:upper-case($line), "ZONE : "))
-                then ()
+                then (
+					let $_ := xdmp:log(" --- VICINITY ","debug")
+					return ()
+				)
                 else if (fn:starts-with(fn:upper-case($line), "PER RDO'S JUSTIFICATION"))
                 then (xdmp:log("Justification Note FOUND","debug"),
                     xdmp:set($skip-note,fn:true()))
@@ -273,10 +288,17 @@ declare function bir:load-file(
                 then (xdmp:log("*ZONE FOUND","debug"),
                     xdmp:set($skip-note,fn:true()))
                 else if ($skip-note)
-                then ()
+                then (
+					let $_ := xdmp:log(" --- SKIP ","debug")
+					return ()
+				)
                 else if (fn:starts-with($line, "*"))
-                then ()
+                then (
+					let $_ := xdmp:log(" --- SKIP ","debug")
+					return ()
+				)
                 else
+					let $_ := xdmp:log(" --- process line ","debug")
                     let $escapedLine := bir:escapeSemiColonInString($line)
                     let $fields := tokenize($escapedLine, ";")
                     let $fields := for $field in $fields return fn:normalize-space($field)
