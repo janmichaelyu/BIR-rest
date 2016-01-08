@@ -72,7 +72,7 @@ declare function bir:create-rev(
   let $field := fn:normalize-space($val)
   return (
     try {
-      element rev {xs:decimal(fn:replace(fn:replace($val,"\.",""),",","."))}
+      element rev {xs:decimal(fn:replace($val,",",""))}
     } catch ($exception) {
       element rev { 0.0 },
       element note {$val}
