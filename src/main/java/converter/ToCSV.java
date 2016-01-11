@@ -15,7 +15,7 @@
    limitations under the License.
 ==================================================================== */
 
-package example.poi.apache;
+package converter;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
