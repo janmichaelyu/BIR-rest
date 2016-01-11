@@ -13,7 +13,7 @@ Project makes use of jquery, jquery-ui and bootstrap and has an autocomplete com
 ### Installation
 To get you up and running fast:
 ```
-git clone https://github.com/peetkes/BIR-rest.git
+git clone https://github.com/janmichaelyu/BIR-rest.git
 cd BIR-rest
 ml local bootstrap
 ml local deploy content
@@ -29,24 +29,16 @@ Open up the queryconsole on the machine [localhost:8000/qconsole], copy the cont
 Hit localhost:8045/default.xqy to see the application in action
 
 ### Convert excelsheets to CSV
+WARNING: all the files in the 'output' folder will be deleted when this program is run.
 
-The cleanup scripts run as an applescript on a Mac. There is no version for windows or Linux.
-To run the cleanup script:
+Update the project dependencies using Maven.
 
-Start the scripts/Save all sheets as CSV files.scpt  
-Hit the run button  
-Select the folder containing the excel sheets.  
-Select the folder for the csv result files.  
-Select a folder where the list of csv files will be saved. (this can be of use for the xml file with the overview)
+Run Main.java. It will iterate over any .xsl or .xslx file in 'data/final' including subfolders and save the converted csv files in 'output' folder. It will also copy any .xml files to the 'output' folder. 
 
-The script will go over all excel files in the inputfolder and convert these to a csv file per worksheet.
 You then need to create the overview file for all generated csv files. This overview file holds the filename, start and end date, the do-number and the revision. See scripts/sample-file-overview.xml for the format
 
 The script scripts/load-data.xqy can be used to load all data in the database.
-Open up the queryconsole on the machine [localhost:8000/qconsole], copy the content of this script , adjust the location and fileListName parameter and run the script.
+Open up the queryconsole on the machine [localhost:8000/qconsole], copy the content of this script, adjust the location and fileListName parameter and run the script.
 This will spawn the loading of the data to the taskserver.
 
 A chunk of test-data is available as zip in the test-data folder
-
-
-
