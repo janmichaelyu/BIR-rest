@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csvfiles>	
+	<csvfile>
+		<filename>RDO No. 25A - Plaridel Bulacan.Sheet 8 (DO 29-09).utf8.csv</filename>
+		<start-date>15-07-2009</start-date>
+		<end-date>Present</end-date>
+		<do-no>29-09</do-no>
+		<revision>4th</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25A - Plaridel Bulacan.Sheet 7 (DO 29-09).utf8.csv</filename>
+		<start-date>15-07-2009</start-date>
+		<end-date>Present</end-date>
+		<do-no>29-09</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25A - Plaridel Bulacan.Sheet 6 (DO 2-2000).utf8.csv</filename>
+		<start-date>21-03-2000</start-date>
+		<end-date>14-07-2009</end-date>
+		<do-no>2-2000</do-no>
+		<revision>3rd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25A - Plaridel Bulacan.Sheet 5 (DO 72-96).utf8.csv</filename>
+		<start-date>16-09-1996</start-date>
+		<end-date>20-03-2000</end-date>
+		<do-no>72-96</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25A - Plaridel Bulacan.Sheet 4 (DO 7-97).utf8.csv</filename>
+		<start-date>23-03-1997</start-date>
+		<end-date>14-07-2009</end-date>
+		<do-no>7-97</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25A - Plaridel Bulacan.Sheet 3 (DO 84-94).utf8.csv</filename>
+		<start-date>28-09-1994</start-date>
+		<end-date>15-09-1996</end-date>
+		<do-no>84-94</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25A - Plaridel Bulacan.Sheet 2 (DO 83-94).utf8.csv</filename>
+		<start-date>25-09-1994</start-date>
+		<end-date>22-03-1997</end-date>
+		<do-no>83-94</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25A - Plaridel Bulacan.Sheet 1 (DO 134-91).utf8.csv</filename>
+		<start-date>31-07-1992</start-date>
+		<end-date>27-09-1994</end-date>
+		<do-no>134-91</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25B - Marilao Bulacan.Sheet 8 (DO 29-09).utf8.csv</filename>
+		<start-date>15-07-2009</start-date>
+		<end-date>Present</end-date>
+		<do-no>29-09</do-no>
+		<revision>4th</revision>
+	</csvfile>	
+	<csvfile>
+		<filename>RDO No. 25B - Marilao Bulacan.Sheet 7 (DO 29-09).utf8.csv</filename>
+		<start-date>15-07-2009</start-date>
+		<end-date>Present</end-date>
+		<do-no>29-09</do-no>
+		<revision>2nd</revision>
+	</csvfile>	
+	<csvfile>
+		<filename>RDO No. 25B - Marilao Bulacan.Sheet 6 (DO 2-2000).utf8.csv</filename>
+		<start-date>21-03-2000</start-date>
+		<end-date>14-07-2009</end-date>
+		<do-no>2-00</do-no>
+		<revision>3rd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25B - Marilao Bulacan.Sheet 5 (DO 72-96).utf8.csv</filename>
+		<start-date>16-09-1996</start-date>
+		<end-date>20-03-2000</end-date>
+		<do-no>72-96</do-no>
+		<revision>2nd</revision>
+	</csvfile>	
+<csvfile>
+		<filename>RDO No. 25B - Marilao Bulacan.Sheet 4 (DO 7-97).utf8.csv</filename>
+		<start-date>23-03-1997</start-date>
+		<end-date>14-07-1996</end-date>
+		<do-no>7-97</do-no>
+		<revision>1st</revision>
+	</csvfile>		
+	<csvfile>
+		<filename>RDO No. 25B - Marilao Bulacan.Sheet 3 (DO 84-94).utf8.csv</filename>
+		<start-date>28-09-1994</start-date>
+		<end-date>15-09-1996</end-date>
+		<do-no>84-94</do-no>
+		<revision>1st</revision>
+	</csvfile>	
+	<csvfile>
+		<filename>RDO No. 25B - Marilao Bulacan.Sheet 2 (DO 83-94).utf8.csv</filename>
+		<start-date>25-09-1994</start-date>
+		<end-date>22-03-1997</end-date>
+		<do-no>83-94</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 25B - Marilao Bulacan.Sheet 1 (DO 134-91).utf8.csv</filename>
+		<start-date>31-07-1992</start-date>
+		<end-date>27-09-1994</end-date>
+		<do-no>134-91</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+</csvfiles>

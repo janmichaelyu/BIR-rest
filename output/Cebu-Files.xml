@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csvfiles>	
+	<csvfile>
+		<filename>RDO No. 80 - Mandaue City-TIP.Sheet 7 (DO 5-09).utf8.csv</filename>
+		<start-date>25-09-2009</start-date>
+		<end-date>Present</end-date>
+		<do-no>5-09</do-no>
+		<revision>3rd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 80 - Mandaue City-TIP.Sheet 6 (DO 63-02).utf8.csv</filename>
+		<start-date>28-12-2002</start-date>
+		<end-date>24-02-2009</end-date>
+		<do-no>63-02</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 80 - Mandaue City-TIP.Sheet 5 (DO 22-98).utf8.csv</filename>
+		<start-date>23-06-98</start-date>
+		<end-date>24-02-2009</end-date>
+		<do-no>22-98</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 80 - Mandaue City-TIP.Sheet 4 (DO 115-95).utf8.csv</filename>
+		<start-date>11-10-1995</start-date>
+		<end-date>24-02-2009</end-date>
+		<do-no>115-95</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 80 - Mandaue City-TIP.Sheet 3 (DO 108-95).utf8.csv</filename>
+		<start-date>11-10-1995</start-date>
+		<end-date>22-06-1998</end-date>
+		<do-no>108-95</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 80 - Mandaue City-TIP.Sheet 2 (DO 23-90).utf8.csv</filename>
+		<start-date>31-05-1990</start-date>
+		<end-date>10-10-1995</end-date>
+		<do-no>23-90</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 80 - Mandaue City-TIP.Sheet 1 (DO 22-90).utf8.csv</filename>
+		<start-date>31-05-1990</start-date>
+		<end-date>10-10-1995</end-date>
+		<do-no>22-90</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 81 - Cebu City North - TIP.Sheet 4 (DO 36-07).utf8.csv</filename>
+		<start-date>07-10-2007</start-date>
+		<end-date>Present</end-date>
+		<do-no>36-07</do-no>
+		<revision>3rd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 81 - Cebu City North - TIP.Sheet 3 (DO 15-97).utf8.csv</filename>
+		<start-date>24-04-1997</start-date>
+		<end-date>21-10-2007</end-date>
+		<do-no>15-97</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 81 - Cebu City North - TIP.Sheet 2 (DO 20-93).utf8.csv</filename>
+		<start-date>14-05-1993</start-date>
+		<end-date>23-04-1997</end-date>
+		<do-no>20-93</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 81 - Cebu City North - TIP.Sheet 1 (DO 26-89).utf8.csv</filename>
+		<start-date>21-09-1989</start-date>
+		<end-date>13-05-1993</end-date>
+		<do-no>26-89</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 82 - Cebu City South - TIP.Sheet 4 (DO 46-07).utf8.csv</filename>
+		<start-date>06-01-2008</start-date>
+		<end-date>Present</end-date>
+		<do-no>46-07</do-no>
+		<revision>3rd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 82 - Cebu City South - TIP.Sheet 3 (DO 18-97).utf8.csv</filename>
+		<start-date>24-04-1997</start-date>
+		<end-date>05-01-2008</end-date>
+		<do-no>18-97</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 82 - Cebu City South - TIP.Sheet 2 (DO 20-93).utf8.csv</filename>
+		<start-date>14-05-1993</start-date>
+		<end-date>23-04-1997</end-date>
+		<do-no>20-93</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 82 - Cebu City South - TIP.Sheet 1 (DO 26-89).utf8.csv</filename>
+		<start-date>21-09-1989</start-date>
+		<end-date>13-05-1993</end-date>
+		<do-no>26-89</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 83 -Talisay City - TIP.Sheet 5 (DO 44-02).utf8.csv</filename>
+		<start-date>28-12-2002</start-date>
+		<end-date>Present</end-date>
+		<do-no>44-02</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 83 -Talisay City - TIP.Sheet 4 (DO 15-02).utf8.csv</filename>
+		<start-date>28-12-2002</start-date>
+		<end-date>Present</end-date>
+		<do-no>15-02</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 83 -Talisay City - TIP.Sheet 3 (DO 30-97).utf8.csv</filename>
+		<start-date>08-07-1997</start-date>
+		<end-date>Present</end-date>
+		<do-no>30-97</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 83 -Talisay City - TIP.Sheet 2 (DO 29-97).utf8.csv</filename>
+		<start-date>08-07-1997</start-date>
+		<end-date>Present</end-date>
+		<do-no>29-97</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 83 -Talisay City - TIP.Sheet 1 (DO 21-93).utf8.csv</filename>
+		<start-date>13-05-1993</start-date>
+		<end-date>Present</end-date>
+		<do-no>21-93</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+</csvfiles>
