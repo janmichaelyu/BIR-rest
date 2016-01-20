@@ -244,25 +244,26 @@ return
     <a href="/default.xqy"><img src="header_image.jpg" /></a>
     <h3 class="center">Please select your location to view the zonal value</h3>
     <form class="form-horizontal ui-widget" role="form" id="zonalForm">
-        { local:combobox("rdo",$rdo,$date-q,$params) }
-        { local:combobox("city",$city,$date-q,$params) }
-		{ local:combobox("barangay",$barangay,$date-q,$params) }
-		{ local:combobox("street",$street,$date-q,$params) }
-		{ local:combobox("condo",$condo,$date-q,$params) }
-		{ local:combobox("vicinity",$vicinity,$date-q,$params) }
-		{ local:combobox("class",$class,$date-q,$params) }
         <div class="form-group">
+            <label class="col-sm-2 control-label" for="date">Transaction Date:</label>
+            <div class="col-sm-2">
+                <input class="ui-widget ui-corner-left ui-corner-right zonal-color" id="date" type="text" name="date" value="{ $date }" data-date-format="yyyy-mm-dd" required="required"/>
+            </div>
+        </div>
+        { if ($date) then local:combobox("rdo",$rdo,$date-q,$params)  else ()}
+        { if ($date) then local:combobox("city",$city,$date-q,$params) else ()}
+		{ if ($date) then local:combobox("barangay",$barangay,$date-q,$params) else ()}
+		{ if ($date) then local:combobox("street",$street,$date-q,$params) else ()}
+		{ if ($date) then local:combobox("condo",$condo,$date-q,$params) else ()}
+		{ if ($date) then local:combobox("vicinity",$vicinity,$date-q,$params) else ()}
+		{ if ($date) then local:combobox("class",$class,$date-q,$params) else ()}
+        { if ($date) then <div class="form-group">
             <label class="col-sm-2 control-label">SQ Meters:</label>
             <div class="col-sm-2">
                 <input id="sqm" type="text" name="sqm" value="{ $sqm }" class="ui-widget ui-corner-left ui-corner-right zonal-color"/>
             </div>
         </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label" for="date">Transaction Date:</label>
-            <div class="col-sm-2">
-                <input class="ui-widget ui-corner-left ui-corner-right zonal-color" id="date" type="text" name="date" value="{ $date }" data-date-format="yyyy-mm-dd"/>
-            </div>
-        </div>
+         else () }
     </form>
     <form  class="form-horizontal ui-widget" role="form" id="clearZonal">
         <div class="form-group">
