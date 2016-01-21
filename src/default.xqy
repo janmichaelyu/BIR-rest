@@ -242,7 +242,7 @@ return
 <body>
     <div class="container-fluid">
     <a href="/default.xqy"><img src="header_image.jpg" /></a>
-    <h3 class="center">Please select your location to view the zonal value</h3>
+    <h3 class="center">Please complete the form to view the zonal value</h3>
     <form class="form-horizontal ui-widget" role="form" id="zonalForm">
         <div class="form-group">
             <label class="col-sm-2 control-label" for="date">Transaction Date:</label>
