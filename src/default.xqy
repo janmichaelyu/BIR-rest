@@ -242,7 +242,7 @@ return
 <body>
     <div class="container-fluid">
     <a href="/default.xqy"><img src="header_image.jpg" /></a>
-    <h3 class="center">Please complete the form to view the zonal value</h3>
+    { if (not($date)) then <h3 class="center">"Please select the effectivity date for the zonal value you're seeking, either now or in the past."</h3> else ()}
     <form class="form-horizontal ui-widget" role="form" id="zonalForm">
         <div class="form-group">
             <label class="col-sm-2 control-label" for="date">Transaction Date:</label>
