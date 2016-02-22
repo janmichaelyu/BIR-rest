@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csvfiles>	
+	<csvfile>
+		<filename>RDO No 13-Tuguegarao (Batanes Island)_TIP.Sheet 1 (DO 88-96).utf8.csv</filename>
+		<start-date>02-09-1996</start-date>
+		<end-date>Present</end-date>
+		<do-no>88-96</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 13-Tuguegarao (Municipality of Tuguegarao)_TIP.Sheet 3 (DO 41-98).utf8.csv</filename>
+		<start-date>02-02-1998</start-date>
+		<end-date>Present</end-date>
+		<do-no>41-98</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 13-Tuguegarao (Municipality of Tuguegarao)_TIP.Sheet 2 (DO 74-94).utf8.csv</filename>
+		<start-date>07-02-1994</start-date>
+		<end-date>01-02-1998</end-date>
+		<do-no>74-94</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 13-Tuguegarao (Municipality of Tuguegarao)_TIP.Sheet 1 (DO 62-90).utf8.csv</filename>
+		<start-date> </start-date>
+		<end-date>06-02-1994</end-date>
+		<do-no>62-90</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 13-Tuguegarao (Other Municipalities)_TIP.Sheet 2 (DO 3-2000).utf8.csv</filename>
+		<start-date>24-05-1999</start-date>
+		<end-date>Present</end-date>
+		<do-no>3-2000</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 13-Tuguegarao (Other Municipalities)_TIP.Sheet 1 (DO 16-95).utf8.csv</filename>
+		<start-date>01-09-1990</start-date>
+		<end-date>23-05-1999</end-date>
+		<do-no>16-95</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 14  - Bayombong  Nueva Viscaya_TIP.SHEET 1 (DO 23-03).utf8.csv</filename>
+		<start-date>16-11-2003</start-date>
+		<end-date>Present</end-date>
+		<do-no>23-03</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 14  - Bayombong  Nueva Viscaya_TIP.SHEET 2 (DO 56-97).utf8.csv</filename>
+		<start-date>22-12-1997</start-date>
+		<end-date>15-11-2003</end-date>
+		<do-no>56-97</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 14  - Bayombong  Nueva Viscaya_TIP.SHEET 3 ( DO 148-95).utf8.csv</filename>
+		<start-date>25-12-1995</start-date>
+		<end-date>21-12-1997</end-date>
+		<do-no>148-95</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No 15 - Ilagan Isabela_TIP.Sheet 2 (DO 17-02).utf8.csv</filename>
+		<start-date>16-09-2002</start-date>
+		<end-date>Present</end-date>
+		<do-no>17-02</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 16 - Cabarroguis Quirino_TIP.Sheet 3 (DO 19-2014).utf8.csv</filename>
+		<start-date>07-05-2014</start-date>
+		<end-date>Present</end-date>
+		<do-no>19-2014</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 16 - Cabarroguis Quirino_TIP.Sheet 2 (DO 16-02).utf8.csv</filename>
+		<start-date>28-12-2002</start-date>
+		<end-date>06-05-2014</end-date>
+		<do-no>16-02</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 16 - Cabarroguis Quirino_TIP.Sheet 1 (DO 29-95).utf8.csv</filename>
+		<start-date>01-06-1995</start-date>
+		<end-date>27-12-02</end-date>
+		<do-no>16-02</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+</csvfiles>

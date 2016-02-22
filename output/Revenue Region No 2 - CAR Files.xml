@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<csvfiles>	
+	<csvfile>
+		<filename>RDO No. 7 - Bangued, Abra_TIP.Sheet 3 (DO 8-09).utf8.csv</filename>
+		<start-date>25-02-2009</start-date>
+		<end-date>Present</end-date>
+		<do-no>8-09</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 7 - Bangued, Abra_TIP.Sheet 2 (DO 48-97).utf8.csv</filename>
+		<start-date>16-10-1997</start-date>
+		<end-date>24-02-2009</end-date>
+		<do-no>48-97</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 7 - Bangued, Abra_TIP.Sheet 1 (DO 75-94).utf8.csv</filename>
+		<start-date>03-10-1994</start-date>
+		<end-date>15-10-1997</end-date>
+		<do-no>75-94</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 9 - La Trinidad Benguet_TIP.Sheet 2 (DO 40-02).utf8.csv</filename>
+		<start-date>28-12-2002</start-date>
+		<end-date>Present</end-date>
+		<do-no>40-02</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 9 - La Trinidad Benguet_TIP.Sheet 1 (DO 48-95).utf8.csv</filename>
+		<start-date>14-09-1995</start-date>
+		<end-date>27-12-2002</end-date>
+		<do-no>48-95</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 10 - Bontoc Mt. Province_TIP.Sheet 2 (DO 39-02).utf8.csv</filename>
+		<start-date>28-12-2002</start-date>
+		<end-date>Present</end-date>
+		<do-no>39-02</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 10 - Bontoc Mt. Province_TIP.Sheet 1 (DO 24-94).utf8.csv</filename>
+		<start-date>26-06-1994</start-date>
+		<end-date>27-12-2002</end-date>
+		<do-no>24-94</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 11 -  Tabuk Kalinga Apayao_TIP.Sheet 3 (DO 2-2010).utf8.csv</filename>
+		<start-date>27-03-2010</start-date>
+		<end-date>Present</end-date>
+		<do-no>2-10</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 11 -  Tabuk Kalinga Apayao_TIP.Sheet 2 (DO 19-02).utf8.csv</filename>
+		<start-date>28-12-2002</start-date>
+		<end-date>26-03-2010</end-date>
+		<do-no>19-02</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 11 -  Tabuk Kalinga Apayao_TIP.Sheet 1 (DO 31-94).utf8.csv</filename>
+		<start-date>29-06-1994</start-date>
+		<end-date>27-12-2002</end-date>
+		<do-no>31-94</do-no>
+		<revision>initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 8 - Baguio City_TIP.Sheet 3 (DO 17-98).utf8.csv</filename>
+		<start-date>17-02-1995</start-date>
+		<end-date>Present</end-date>
+		<do-no>17-98</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 8 - Baguio City_TIP.Sheet 2 (DO 31-95).utf8.csv</filename>
+		<start-date>20-09-1989</start-date>
+		<end-date>15-02-1995</end-date>
+		<do-no>31-95</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 8 - Baguio City_TIP.Sheet 1 (DO 52-89).utf8.csv</filename>
+		<start-date></start-date>
+		<end-date>19-09-1989</end-date>
+		<do-no>52-89</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 12 - Lagawe Ifugao_TIP.Sheet 3 (DO 33-09).utf8.csv</filename>
+		<start-date>10-09-2002</start-date>
+		<end-date>Present</end-date>
+		<do-no>33-09</do-no>
+		<revision>2nd</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 12 - Lagawe Ifugao_TIP.Sheet 2 (DO 18-02).utf8.csv</filename>
+		<start-date>08-02-1994</start-date>
+		<end-date>09-09-2002</end-date>
+		<do-no>18-02</do-no>
+		<revision>1st</revision>
+	</csvfile>
+	<csvfile>
+		<filename>RDO No. 12 - Lagawe Ifugao_TIP.Sheet 1 (DO 32-94).utf8.csv</filename>
+		<start-date></start-date>
+		<end-date>08-09-2002</end-date>
+		<do-no>32-94</do-no>
+		<revision>Initial</revision>
+	</csvfile>
+</csvfiles>
