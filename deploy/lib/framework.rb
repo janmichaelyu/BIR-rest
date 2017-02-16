@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2012 MarkLogic Corporation
+# Copyright 2012-2015 MarkLogic Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ module Roxy
             if @no_prompt
               raise ExitException.new("--no-prompt parameter prevents prompting for input. Use -f to force.")
             else
-              answer = gets().downcase.strip
+              answer = STDIN.gets.downcase.strip
               return if answer != "y" && answer != "yes"
             end
           end

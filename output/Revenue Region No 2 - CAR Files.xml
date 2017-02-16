@@ -86,7 +86,7 @@
 	</csvfile>
 	<csvfile>
 		<filename>RDO No. 8 - Baguio City_TIP.Sheet 1 (DO 52-89).utf8.csv</filename>
-		<start-date></start-date>
+		<start-date> </start-date>
 		<end-date>19-09-1989</end-date>
 		<do-no>52-89</do-no>
 		<revision>Initial</revision>
@@ -107,7 +107,7 @@
 	</csvfile>
 	<csvfile>
 		<filename>RDO No. 12 - Lagawe Ifugao_TIP.Sheet 1 (DO 32-94).utf8.csv</filename>
-		<start-date></start-date>
+		<start-date> </start-date>
 		<end-date>08-09-2002</end-date>
 		<do-no>32-94</do-no>
 		<revision>Initial</revision>

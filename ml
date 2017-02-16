@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-# Copyright 2012 MarkLogic Corporation
+# Copyright 2012-2015 MarkLogic Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,12 +46,12 @@ then
     then
       read -r -n 1 -p "Running ml new from within a Roxy project is not recommended. Continue? [y/N] " response
       printf "\n"
-      if [ $response != "Y" ] && [ $response != "y" ]
+      if [[ $response != "Y" ]] && [[ $response != "y" ]]
       then
         exit 1
-      fi      
+      fi
     fi
-    
+
     app_name="$1"
     shift
 
@@ -155,7 +155,7 @@ then
 else
   if [ -e deploy/lib/ml.rb ]
   then
-    ruby -I deploy -I deploy/lib deploy/lib/ml.rb $* || exit 1
+    ruby -I deploy -I deploy/lib deploy/lib/ml.rb $* || exit $?
   else
     printf "\nERROR: You must run this command inside a valid Roxy Project. Use 'ml new' to create a project.\n\n"
     usage
